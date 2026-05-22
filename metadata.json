@@ -1,0 +1,8 @@
+{
+  "name": "RDESIGN Lighting",
+  "description": "Professional lighting design consultancy website featuring a minimalist portfolio of architectural and interior projects.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
