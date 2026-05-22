@@ -2,30 +2,16 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
 import type { Language } from '../App';
-import { newsData } from '../data/news';
+import { useProjects } from '../context/ProjectContext';
 import { ChevronDown } from 'lucide-react';
 
-const getServiceLabel = (category: string, lang: Language) => {
-  const cat = category.toUpperCase();
-  if (cat === 'EXHIBITION') {
-    return lang === 'cn' ? '展览策划与陈列服务' : 'Exhibition & Curation Service';
+const formatYearMonth = (dateStr: string) => {
+  if (!dateStr) return '';
+  const parts = dateStr.split(/[.\-\/]/);
+  if (parts.length >= 2) {
+    return `${parts[0]}.${parts[1]}`;
   }
-  if (cat === 'AWARDS') {
-    return lang === 'cn' ? '专业评审与荣誉服务' : 'Design Award & Honor Service';
-  }
-  if (cat === 'WORKSHOP') {
-    return lang === 'cn' ? '光影技术工作坊服务' : 'Lighting Tech Workshop Service';
-  }
-  if (cat === 'EVENT') {
-    return lang === 'cn' ? '国际活动与论坛服务' : 'International Event & Seminar';
-  }
-  if (cat === 'ANNOUNCEMENT') {
-    return lang === 'cn' ? '企业公告与发布服务' : 'Corporate Announcement';
-  }
-  if (cat === 'FESTIVAL') {
-    return lang === 'cn' ? '城市节庆照明设计服务' : 'Urban Festival Lighting Service';
-  }
-  return lang === 'cn' ? '高端建筑照明设计服务' : 'Architectural Lighting Service';
+  return dateStr;
 };
 
 interface NewsPageProps {
@@ -33,6 +19,7 @@ interface NewsPageProps {
 }
 
 export default function NewsPage({ lang }: NewsPageProps) {
+  const { news } = useProjects();
   const [activeFilters, setActiveFilters] = useState<string[]>(['ALL']);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -43,9 +30,16 @@ export default function NewsPage({ lang }: NewsPageProps) {
   };
 
   const categories = useMemo(() => {
-    const cats = Array.from(new Set(newsData.map(item => item.category)));
-    return ['ALL', ...cats];
-  }, []);
+    const tagsSet = new Set<string>();
+    news.forEach(item => {
+      const tagsStr = lang === 'cn' ? item.tagsCN : item.tagsEN;
+      if (tagsStr) {
+        const tags = tagsStr.split(/[,，、]/).map(t => t.trim()).filter(Boolean);
+        tags.forEach(t => tagsSet.add(t));
+      }
+    });
+    return ['ALL', ...Array.from(tagsSet)];
+  }, [news, lang]);
 
   const toggleFilter = (cat: string) => {
     if (cat === 'ALL') {
@@ -64,9 +58,14 @@ export default function NewsPage({ lang }: NewsPageProps) {
   };
 
   const filteredItems = useMemo(() => {
-    if (activeFilters.includes('ALL')) return newsData;
-    return newsData.filter(item => activeFilters.includes(item.category));
-  }, [activeFilters]);
+    if (activeFilters.includes('ALL')) return news;
+    return news.filter(item => {
+      const tagsStr = lang === 'cn' ? item.tagsCN : item.tagsEN;
+      if (!tagsStr) return false;
+      const tags = tagsStr.split(/[,，、]/).map(t => t.trim()).filter(Boolean);
+      return tags.some(t => activeFilters.includes(t));
+    });
+  }, [activeFilters, news, lang]);
 
   return (
     <div className="pt-24 pb-20 bg-white">
@@ -74,15 +73,15 @@ export default function NewsPage({ lang }: NewsPageProps) {
       <div className="w-full px-6 md:px-12 mb-[2px] flex justify-center">
         <div className="w-full max-w-[1280px]">
           {/* Page Header */}
-          <div className="flex justify-between items-baseline pb-3">
-            <h1 className="text-[31px] md:text-[43px] font-bold tracking-[0.1em] uppercase">
+          <div className="flex justify-between items-end pb-3 border-b border-neutral-100">
+            <h1 className="text-[31px] md:text-[43px] font-bold tracking-[0.1em] uppercase leading-none">
               {t.title}
             </h1>
             <div 
-              className="flex items-center gap-2 group cursor-pointer"
+              className="flex items-center gap-2 group cursor-pointer pb-[1px]"
               onClick={() => setIsFilterOpen(!isFilterOpen)}
             >
-              <span className="text-[15px] font-bold uppercase tracking-[0.3em]">
+              <span className="text-[15px] font-bold uppercase tracking-[0.3em] leading-none">
                 {activeFilters.includes('ALL') 
                   ? t.filterBy 
                   : activeFilters.join(' + ')
@@ -105,7 +104,7 @@ export default function NewsPage({ lang }: NewsPageProps) {
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                 className="overflow-hidden bg-white"
               >
-                <div className="py-3 flex flex-wrap justify-start gap-x-12 gap-y-2">
+                <div className="py-3 flex flex-wrap justify-start gap-x-6 gap-y-2">
                   {categories.map((cat) => {
                     const isActive = activeFilters.includes(cat);
                     return (
@@ -120,13 +119,6 @@ export default function NewsPage({ lang }: NewsPageProps) {
                         `}
                       >
                         {cat === 'ALL' ? t.all : cat}
-                        {isActive && (
-                          <motion.div 
-                            layoutId="news-filter-underline"
-                            className="absolute bottom-0 left-0 right-0 h-[1px] bg-gray-900"
-                            transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                          />
-                        )}
                       </button>
                     );
                   })}
@@ -175,15 +167,19 @@ export default function NewsPage({ lang }: NewsPageProps) {
                     </h3>
                     
                     <p className="text-[11px] md:text-[12px] font-light opacity-85 mb-3">
-                      {item.location ? (lang === 'cn' ? `${item.location} · ` : `${item.location} // `) : ''}{item.date}
+                      {formatYearMonth(item.date)}
                     </p>
                     
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 mt-4">
-                      <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-amber-400">
-                        {getServiceLabel(item.category, lang)}
-                      </span>
-                      <span className="text-[11px] font-mono tracking-[0.1em] text-white/50 uppercase font-semibold">
-                        [ {item.category} ]
+                      <span className="text-[13px] font-bold uppercase tracking-[0.2em] text-white/70">
+                        {(() => {
+                          const tagsStr = lang === 'cn' ? item.tagsCN : item.tagsEN;
+                          if (tagsStr) {
+                            const tags = tagsStr.split(/[,，、]/).map(t => t.trim()).filter(Boolean);
+                            if (tags.length > 0) return tags[0];
+                          }
+                          return lang === 'cn' ? '智库动态' : 'NEWS INTEL';
+                        })()}
                       </span>
                     </div>
                   </div>

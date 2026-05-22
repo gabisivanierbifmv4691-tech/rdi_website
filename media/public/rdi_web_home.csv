@@ -1,0 +1,8 @@
+首屏大图,1,2,3,4,5,,,
+id,shanghai-psa,nanjing-baiyunting,shanghai-nhm,zhengzhou-greenland,zibo-mixc,,,
+,,,,,,,,
+图片栏,1,2,3,4,5,6,7,
+id,shanghai-psa,nanjing-baiyunting,shanghai-nhm,zhengzhou-greenland,zibo-mixc,boshi-art-museum,zibo-mixc,
+aspect,aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-square,aspect-square,aspect-square,aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-square,aspect-square,
+span,md:row-span-2,,,,,,md:col-span-2,
+,,,,,,,,

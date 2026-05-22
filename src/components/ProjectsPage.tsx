@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import type { Language } from '../App';
 import { ChevronDown } from 'lucide-react';
 import { useProjects } from '../context/ProjectContext';
-import { getCategoryLabel, getLocationLabel } from '../utils/projectHelpers';
+import { getLocationLabel } from '../utils/projectHelpers';
 
 interface ProjectsPageProps {
   lang: Language;
@@ -22,9 +22,16 @@ export default function ProjectsPage({ lang }: ProjectsPageProps) {
   };
 
   const categories = useMemo(() => {
-    const cats = Array.from(new Set(projects.map(p => p.category)));
-    return ['ALL', ...cats];
-  }, [projects]);
+    const tagsSet = new Set<string>();
+    projects.forEach(p => {
+      const tagsStr = lang === 'cn' ? p.tagsCN : p.tagsEN;
+      if (tagsStr) {
+        const tags = tagsStr.split(/[,，、]/).map(t => t.trim()).filter(Boolean);
+        tags.forEach(t => tagsSet.add(t));
+      }
+    });
+    return ['ALL', ...Array.from(tagsSet)];
+  }, [projects, lang]);
 
   const toggleFilter = (cat: string) => {
     if (cat === 'ALL') {
@@ -44,8 +51,13 @@ export default function ProjectsPage({ lang }: ProjectsPageProps) {
 
   const filteredProjects = useMemo(() => {
     if (activeFilters.includes('ALL')) return projects;
-    return projects.filter(p => activeFilters.includes(p.category));
-  }, [activeFilters, projects]);
+    return projects.filter(p => {
+      const tagsStr = lang === 'cn' ? p.tagsCN : p.tagsEN;
+      if (!tagsStr) return false;
+      const tags = tagsStr.split(/[,，、]/).map(t => t.trim()).filter(Boolean);
+      return tags.some(t => activeFilters.includes(t));
+    });
+  }, [activeFilters, projects, lang]);
 
   if (loading) {
     return (
@@ -69,15 +81,15 @@ export default function ProjectsPage({ lang }: ProjectsPageProps) {
       <div className="w-full px-6 md:px-12 mb-[2px] flex justify-center">
         <div className="w-full max-w-[1280px]">
           {/* Page Header */}
-          <div className="flex justify-between items-baseline pb-3">
-            <h1 className="text-[31px] md:text-[43px] font-bold tracking-[0.1em] uppercase">
+          <div className="flex justify-between items-end pb-3 border-b border-neutral-100">
+            <h1 className="text-[31px] md:text-[43px] font-bold tracking-[0.1em] uppercase leading-none">
               {t.title}
             </h1>
             <div 
-              className="flex items-center gap-2 group cursor-pointer"
+              className="flex items-center gap-2 group cursor-pointer pb-[1px]"
               onClick={() => setIsFilterOpen(!isFilterOpen)}
             >
-              <span className="text-[15px] font-bold uppercase tracking-[0.3em]">
+              <span className="text-[15px] font-bold uppercase tracking-[0.3em] leading-none">
                 {activeFilters.includes('ALL') 
                   ? t.filterBy 
                   : activeFilters.join(' + ')
@@ -100,7 +112,7 @@ export default function ProjectsPage({ lang }: ProjectsPageProps) {
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                 className="overflow-hidden bg-white"
               >
-                <div className="py-3 flex flex-wrap justify-start gap-x-12 gap-y-2">
+                <div className="py-3 flex flex-wrap justify-start gap-x-6 gap-y-2">
                   {categories.map((cat) => {
                     const isActive = activeFilters.includes(cat);
                     return (
@@ -115,13 +127,6 @@ export default function ProjectsPage({ lang }: ProjectsPageProps) {
                         `}
                       >
                         {cat === 'ALL' ? t.all : cat}
-                        {isActive && (
-                          <motion.div 
-                            layoutId="filter-underline"
-                            className="absolute bottom-0 left-0 right-0 h-[1px] bg-gray-900"
-                            transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                          />
-                        )}
                       </button>
                     );
                   })}
@@ -203,7 +208,14 @@ export default function ProjectsPage({ lang }: ProjectsPageProps) {
                       {/* Info on cards - same format as the main hero screen */}
                       <div className="absolute bottom-6 left-6 right-6 text-white z-10 select-none transform transition-all duration-700 group-hover:-translate-y-1.5">
                         <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-white/70 block mb-1">
-                          {getCategoryLabel(project.category, lang)}
+                          {(() => {
+                            const tagsStr = lang === 'cn' ? project.tagsCN : project.tagsEN;
+                            if (tagsStr) {
+                              const tags = tagsStr.split(/[,，、]/).map(t => t.trim()).filter(Boolean);
+                              if (tags.length > 0) return tags[0];
+                            }
+                            return lang === 'cn' ? '项目作品' : 'PROJECT';
+                          })()}
                         </span>
                         <h3 className="text-lg md:text-2xl font-bold tracking-tight text-white mb-1.5 uppercase leading-tight line-clamp-2">
                           {lang === 'cn' ? project.titleCN : project.titleEN}

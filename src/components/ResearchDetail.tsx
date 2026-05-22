@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import type { Language } from '../App';
-import { researchData } from '../data/research';
+import { useProjects } from '../context/ProjectContext';
 
 interface ResearchDetailProps {
   lang: Language;
@@ -9,7 +9,8 @@ interface ResearchDetailProps {
 
 const ResearchDetail = ({ lang }: ResearchDetailProps) => {
   const { id } = useParams<{ id: string }>();
-  const researchItem = researchData.find(item => item.id === id);
+  const { getResearchItem } = useProjects();
+  const researchItem = getResearchItem(id);
 
   if (!researchItem) {
     return (

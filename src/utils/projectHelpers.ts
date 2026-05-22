@@ -1,28 +1,5 @@
 import type { Language } from '../App';
 
-export const getCategoryLabel = (category: string, lang: Language): string => {
-  const cat = (category || '').toUpperCase();
-  if (lang === 'cn') {
-    switch (cat) {
-      case 'CULTURAL': return '文化建筑';
-      case 'OFFICE': return '办公空间';
-      case 'ART': return '艺术空间';
-      case 'HOSPITALITY': return '酒店及公共空间';
-      case 'LANDSCAPE': return '景观照明 / 文化商业';
-      default: return category;
-    }
-  } else {
-    switch (cat) {
-      case 'CULTURAL': return 'CULTURAL';
-      case 'OFFICE': return 'OFFICE';
-      case 'ART': return 'ART';
-      case 'HOSPITALITY': return 'HOSPITALITY';
-      case 'LANDSCAPE': return 'LANDSCAPE / COMMERCIAL';
-      default: return category;
-    }
-  }
-};
-
 export const getLocationLabel = (location: string, lang: Language, locationEN?: string): string => {
   const loc = (location || '').trim();
   const lowerLoc = loc.toLowerCase();

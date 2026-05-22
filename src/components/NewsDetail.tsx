@@ -6,7 +6,7 @@ import {
   Clock, Share2, Compass, Layers, Users, ShieldAlert, Award, Tag
 } from 'lucide-react';
 import type { Language } from '../App';
-import { newsData } from '../data/news';
+import { useProjects } from '../context/ProjectContext';
 import CAUPLightShowExhibition from './CAUPLightShowExhibition';
 import LaborDaySpecial from './LaborDaySpecial';
 
@@ -16,7 +16,8 @@ interface NewsDetailProps {
 
 export default function NewsDetail({ lang }: NewsDetailProps) {
   const { id } = useParams<{ id: string }>();
-  const newsItem = newsData.find((n) => n.id === id);
+  const { getNewsItem } = useProjects();
+  const newsItem = getNewsItem(id);
 
   // States for interactive booking system (exhibition specific)
   const [bookingName, setBookingName] = useState('');
@@ -71,18 +72,18 @@ export default function NewsDetail({ lang }: NewsDetailProps) {
     );
   }
 
-  // Check if this is the special CAUP 2026 Light Show exhibition (id '8')
-  if (newsItem.id === '8') {
+  // Check if this is the special CAUP 2026 Light Show exhibition (id '20260515_cau')
+  if (newsItem.id === '20260515_cau') {
     return <CAUPLightShowExhibition lang={lang} />;
   }
 
-  // Check if this is the special Labor Day holiday tribute (id '9')
-  if (newsItem.id === '9') {
+  // Check if this is the special Labor Day holiday tribute (id '20260501_ld')
+  if (newsItem.id === '20260501_ld') {
     return <LaborDaySpecial lang={lang} />;
   }
 
-  // Check if this is the special 3x10 exhibition news item (id '7')
-  const isExhibition = newsItem.id === '7';
+  // Check if this is the special 3x10 exhibition news item (id '20250909_exh')
+  const isExhibition = newsItem.id === '20250909_exh';
 
   if (isExhibition) {
     return (

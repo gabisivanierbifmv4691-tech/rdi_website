@@ -21,18 +21,20 @@ export default function Footer({ lang }: FooterProps) {
   const { homeConfig } = useProjects();
 
   const getSocialIcon = (key: string, DefaultComponent: React.ComponentType<any>) => {
-    const url = homeConfig?.icons?.[key];
-    if (url) {
-      return (
-        <img 
-          src={url} 
-          alt={key} 
-          className="w-5 h-5 object-contain invert opacity-30 hover:opacity-100 transition-opacity"
-          referrerPolicy="no-referrer"
-        />
-      );
-    }
-    return <DefaultComponent size={20} />;
+    return (
+      <img 
+        src={`/media/public/rdi_${key}.svg`} 
+        alt={key} 
+        className="w-5 h-5 object-contain invert opacity-30 hover:opacity-100 transition-opacity"
+        referrerPolicy="no-referrer"
+        onError={(e) => {
+          const target = e.currentTarget;
+          if (target.src.indexOf('/media/public/') === -1) {
+            target.src = `/media/public/rdi_${key}.svg`;
+          }
+        }}
+      />
+    );
   };
 
   const content = {

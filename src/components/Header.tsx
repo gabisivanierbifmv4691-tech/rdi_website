@@ -68,11 +68,11 @@ export default function Header({ lang, onToggleLang }: HeaderProps) {
   };
 
   const bgImages: Record<string, string> = {
-    default: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?q=80&w=2670&auto=format&fit=crop',
-    projects: homeConfig?.hiddenMenu?.projects || 'https://images.unsplash.com/photo-1503387762-592dea58ef21?q=80&w=2670&auto=format&fit=crop',
-    research: homeConfig?.hiddenMenu?.research || 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2670&auto=format&fit=crop',
-    news: homeConfig?.hiddenMenu?.news || 'https://images.unsplash.com/photo-1504384308090-c894ef114191?q=80&w=2670&auto=format&fit=crop',
-    about: homeConfig?.hiddenMenu?.about || 'https://images.unsplash.com/photo-1464938050520-ef2270bb8ce8?q=80&w=2670&auto=format&fit=crop'
+    default: '/media/public/default.webp',
+    projects: homeConfig?.hiddenMenu?.projects || '/media/public/projects.webp',
+    research: homeConfig?.hiddenMenu?.research || '/media/public/research.webp',
+    news: homeConfig?.hiddenMenu?.news || '/media/public/news.webp',
+    about: homeConfig?.hiddenMenu?.about || '/media/public/about.webp'
   };
 
   const [activeBg, setActiveBg] = useState(bgImages.default);
@@ -82,18 +82,20 @@ export default function Header({ lang, onToggleLang }: HeaderProps) {
   }, [homeConfig]);
 
   const getSocialIcon = (key: string, DefaultComponent: React.ComponentType<any>) => {
-    const url = homeConfig?.icons?.[key];
-    if (url) {
-      return (
-        <img 
-          src={url} 
-          alt={key} 
-          className="w-5 h-5 object-contain hover:opacity-50 transition-opacity"
-          referrerPolicy="no-referrer"
-        />
-      );
-    }
-    return <DefaultComponent size={20} />;
+    return (
+      <img 
+        src={`/media/public/rdi_${key}.svg`} 
+        alt={key} 
+        className="w-5 h-5 object-contain hover:opacity-50 transition-opacity"
+        referrerPolicy="no-referrer"
+        onError={(e) => {
+          const target = e.currentTarget;
+          if (target.src.indexOf('/media/public/') === -1) {
+            target.src = `/media/public/rdi_${key}.svg`;
+          }
+        }}
+      />
+    );
   };
 
   const isLightPage = [
@@ -167,10 +169,16 @@ export default function Header({ lang, onToggleLang }: HeaderProps) {
               >
                 <div className="relative">
                   <img 
-                    src="https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/RDILIGHTING_LOGO.png" 
+                    src="/media/public/rdi_logo.svg" 
                     alt="RDI Lighting" 
                     className={`h-10 w-auto object-contain transition-all duration-500 ${(isLightPage && !isScrolled) ? '' : 'invert'}`}
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (target.src.indexOf('/media/public/') === -1) {
+                        target.src = '/media/public/rdi_logo.svg';
+                      }
+                    }}
                   />
                   {/* Animated Dot for feedback */}
                   <motion.div
@@ -276,10 +284,16 @@ export default function Header({ lang, onToggleLang }: HeaderProps) {
                 >
                   <div className="relative">
                     <img 
-                      src="https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/RDILIGHTING_LOGO.png" 
+                      src="/media/public/rdi_logo.svg" 
                       alt="RDI Lighting" 
                       className="h-10 w-auto object-contain"
                       referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        if (target.src.indexOf('/media/public/') === -1) {
+                          target.src = '/media/public/rdi_logo.svg';
+                        }
+                      }}
                     />
                     {/* Animated Dot for Menu Logo */}
                     <motion.div

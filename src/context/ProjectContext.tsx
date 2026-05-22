@@ -1,6 +1,9 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import type { Project } from '../data/projects';
-import { projectsData as fallbackProjects } from '../data/projects';
+import type { NewsItem } from '../data/news';
+import { newsData as fallbackNews } from '../data/news';
+import type { ResearchItem } from '../data/research';
+import { researchData as fallbackResearch } from '../data/research';
 import { parseCSV, getCategoryFromTags } from '../utils/csvParser';
 
 export interface HomeConfig {
@@ -17,11 +20,15 @@ export interface HomeConfig {
 
 interface ProjectContextType {
   projects: Project[];
+  news: NewsItem[];
+  research: ResearchItem[];
   homeConfig: HomeConfig | null;
   loading: boolean;
   error: string | null;
   getProject: (idOrSlug: string | undefined) => Project | undefined;
   getPrevAndNext: (currentId: number) => { prev: Project; next: Project };
+  getNewsItem: (id: string | undefined) => NewsItem | undefined;
+  getResearchItem: (id: string | undefined) => ResearchItem | undefined;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -32,6 +39,8 @@ interface ProjectProviderProps {
 
 export function ProjectProvider({ children }: ProjectProviderProps) {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [research, setResearch] = useState<ResearchItem[]>([]);
   const [homeConfig, setHomeConfig] = useState<HomeConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,9 +50,11 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
     
     async function fetchData() {
       try {
-        const [projRes, homeRes] = await Promise.all([
+        const [projRes, homeRes, newsRes, researchRes] = await Promise.all([
           fetch('/api/projects?t=' + Date.now()),
-          fetch('/api/home-config?t=' + Date.now())
+          fetch('/api/home-config?t=' + Date.now()),
+          fetch('/api/news?t=' + Date.now()),
+          fetch('/api/research?t=' + Date.now())
         ]);
         
         if (!projRes.ok) {
@@ -64,15 +75,34 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
           }
         }
 
+        let fetchedNews: NewsItem[] = fallbackNews;
+        if (newsRes.ok) {
+          const newsDataObj = await newsRes.json();
+          if (newsDataObj.success && Array.isArray(newsDataObj.news)) {
+            fetchedNews = newsDataObj.news;
+          }
+        }
+
+        let fetchedResearch: ResearchItem[] = fallbackResearch;
+        if (researchRes && researchRes.ok) {
+          const researchDataObj = await researchRes.json();
+          if (researchDataObj.success && Array.isArray(researchDataObj.research)) {
+            fetchedResearch = researchDataObj.research;
+          }
+        }
+
         if (!active) return;
         
         if (projData.success && Array.isArray(projData.projects) && projData.projects.length > 0) {
           setProjects(projData.projects);
           setError(null);
         } else {
-          console.warn('API returned success but no projects, using static fallback:', projData);
-          setProjects(fallbackProjects);
+          console.warn('API returned success but no projects:', projData);
+          setProjects([]);
         }
+
+        setNews(fetchedNews);
+        setResearch(fetchedResearch);
 
         if (fetchedHomeConfig) {
           setHomeConfig(fetchedHomeConfig);
@@ -88,20 +118,20 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
               { id: 'zibo-mixc', aspect: 'aspect-[4/4] md:aspect-auto h-full min-h-[300px]', span: '' },
             ],
             hiddenMenu: {
-              projects: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/projects.webp',
-              research: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/research.webp',
-              news: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/news.webp',
-              about: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/about.webp'
+              projects: '/media/public/projects.webp',
+              research: '/media/public/research.webp',
+              news: '/media/public/news.webp',
+              about: '/media/public/about.webp'
             },
             icons: {
-              bilibili: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_bilibili.svg',
-              facebook: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_facebook.svg',
-              instagram: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_instagram.svg',
-              tiktok: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_tiktok.svg',
-              rednote: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_rednote.svg',
-              wechat: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_wechat.svg',
-              linkedin: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_linkedin.svg',
-              youtube: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_youtube.svg'
+              bilibili: '/media/public/rdi_bilibili.svg',
+              facebook: '/media/public/rdi_facebook.svg',
+              instagram: '/media/public/rdi_instagram.svg',
+              tiktok: '/media/public/rdi_tiktok.svg',
+              rednote: '/media/public/rdi_rednote.svg',
+              wechat: '/media/public/rdi_wechat.svg',
+              linkedin: '/media/public/rdi_linkedin.svg',
+              youtube: '/media/public/rdi_youtube.svg'
             }
           });
         }
@@ -111,7 +141,9 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
         console.error('Failed to parse remote data, falling back to static local data:', err);
         if (active) {
           setError(err instanceof Error ? err.message : 'Unknown error');
-          setProjects(fallbackProjects);
+          setProjects([]);
+          setNews(fallbackNews);
+          setResearch(fallbackResearch);
           setHomeConfig({
             heroSlides: ['shanghai-psa', 'nanjing-baiyunting', 'shanghai-nhm', 'zhengzhou-greenland', 'zibo-mixc'],
             gridItems: [
@@ -122,20 +154,20 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
               { id: 'zibo-mixc', aspect: 'aspect-[4/4] md:aspect-auto h-full min-h-[300px]', span: '' },
             ],
             hiddenMenu: {
-              projects: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/projects.webp',
-              research: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/research.webp',
-              news: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/news.webp',
-              about: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/about.webp'
+              projects: '/media/public/projects.webp',
+              research: '/media/public/research.webp',
+              news: '/media/public/news.webp',
+              about: '/media/public/about.webp'
             },
             icons: {
-              bilibili: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_bilibili.svg',
-              facebook: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_facebook.svg',
-              instagram: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_instagram.svg',
-              tiktok: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_tiktok.svg',
-              rednote: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_rednote.svg',
-              wechat: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_wechat.svg',
-              linkedin: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_linkedin.svg',
-              youtube: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_youtube.svg'
+              bilibili: '/media/public/rdi_bilibili.svg',
+              facebook: '/media/public/rdi_facebook.svg',
+              instagram: '/media/public/rdi_instagram.svg',
+              tiktok: '/media/public/rdi_tiktok.svg',
+              rednote: '/media/public/rdi_rednote.svg',
+              wechat: '/media/public/rdi_wechat.svg',
+              linkedin: '/media/public/rdi_linkedin.svg',
+              youtube: '/media/public/rdi_youtube.svg'
             }
           });
           setLoading(false);
@@ -159,7 +191,7 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
   };
 
   const getPrevAndNext = (currentId: number): { prev: Project; next: Project } => {
-    if (projects.length === 0) return { prev: fallbackProjects[0], next: fallbackProjects[0] };
+    if (projects.length === 0) return { prev: {} as Project, next: {} as Project };
     const currentIndex = projects.findIndex(p => p.id === currentId);
     
     const prev = projects[currentIndex - 1] || projects[projects.length - 1];
@@ -168,8 +200,18 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
     return { prev, next };
   };
 
+  const getNewsItem = (id: string | undefined): NewsItem | undefined => {
+    if (!id) return undefined;
+    return news.find(n => n.id === id);
+  };
+
+  const getResearchItem = (id: string | undefined): ResearchItem | undefined => {
+    if (!id) return undefined;
+    return research.find(r => r.id === id);
+  };
+
   return (
-    <ProjectContext.Provider value={{ projects, homeConfig, loading, error, getProject, getPrevAndNext }}>
+    <ProjectContext.Provider value={{ projects, news, research, homeConfig, loading, error, getProject, getPrevAndNext, getNewsItem, getResearchItem }}>
       {children}
     </ProjectContext.Provider>
   );

@@ -2,9 +2,8 @@ import { motion } from 'motion/react';
 import { ArrowLeft, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import type { Language } from '../App';
-import { projectsData } from '../data/projects';
 import { useProjects } from '../context/ProjectContext';
-import { getCategoryLabel, getLocationLabel } from '../utils/projectHelpers';
+import { getLocationLabel } from '../utils/projectHelpers';
 import { marked } from 'marked';
 
 // Helper to ensure markdown lines starting with ### are correctly spaced for parser to identify headers properly
@@ -38,14 +37,28 @@ export default function ProjectDetail({ lang }: ProjectDetailProps) {
   }
   
   // Find project by slug or standard numeric ID
-  const basicInfo = getProject(id) || projects[0] || projectsData[0];
+  const basicInfo = getProject(id) || projects[0];
+  if (!basicInfo) {
+    return (
+      <div className="pt-24 pb-20 bg-white min-h-[80vh] flex flex-col justify-center items-center">
+        <p className="text-neutral-500 mb-4">{lang === 'cn' ? '未找到该项目' : 'Project not found'}</p>
+        <Link to="/projects" className="text-sm underline font-bold">{lang === 'cn' ? '返回项目列表' : 'Back to Projects'}</Link>
+      </div>
+    );
+  }
   const projectId = basicInfo.id;
 
   const completionYear = basicInfo.completion || '2024';
   const yearDigits = completionYear.match(/\d+/)?.[0] || completionYear;
 
   const project = {
-    category: getCategoryLabel(basicInfo.category, lang),
+    category: (() => {
+      const tagsStr = lang === 'cn' ? basicInfo.tagsCN : basicInfo.tagsEN;
+      if (tagsStr) {
+        return tagsStr.split(/[,，、]/).map(t => t.trim()).filter(Boolean).join(' / ');
+      }
+      return lang === 'cn' ? '项目作品' : 'PROJECT';
+    })(),
     title: lang === 'cn' ? basicInfo.titleCN : basicInfo.titleEN,
     location: getLocationLabel(basicInfo.location, lang, basicInfo.locationEN),
     heroImage: basicInfo.heroMedia || basicInfo.image, 
