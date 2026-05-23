@@ -230,8 +230,8 @@ async function startServer() {
       };
 
       const [rawRows, rawBlockRows] = await Promise.all([
-        fetchCSV('/media/projects/rdi_web_projects.csv'),
-        fetchCSV('/media/projects/rdi_web_projects_blocks.csv')
+        fetchCSV('dist/assets/projects/rdi_web_projects.csv'),
+        fetchCSV('dist/assets/projects/rdi_web_projects_blocks.csv')
       ]);
 
       const blocksMap: Record<string, any[]> = {};
@@ -399,7 +399,7 @@ async function startServer() {
 
   // Serve proxy route to fetch home layout CSV and convert it to clean JSON
   app.get("/api/home-config", (req, res) => {
-    const csvPath = path.join(process.cwd(), 'media/public/rdi_web_home.csv');
+    const csvPath = path.join(process.cwd(), 'dist/assets/public/rdi_web_home.csv');
     fs.readFile(csvPath, (err, buffer) => {
       if (err) {
         console.error('Local home CSV read error:', err);
@@ -418,10 +418,10 @@ async function startServer() {
         const heroSlides: string[] = [];
         const gridItems: { id: string; aspect: string; span: string }[] = [];
         const hiddenMenu = {
-          projects: '/media/public/projects.webp',
-          research: '/media/public/research.webp',
-          news: '/media/public/news.webp',
-          about: '/media/public/about.webp'
+          projects: 'https://kgmlighting.com.cn/public/projects.webp',
+          research: 'https://kgmlighting.com.cn/public/research.webp',
+          news: 'https://kgmlighting.com.cn/public/news.webp',
+          about: 'https://kgmlighting.com.cn/public/about.webp'
         };
         const icons: Record<string, string> = {};
 
@@ -516,7 +516,7 @@ async function startServer() {
   // Serve proxy route to fetch news CSV and convert it to clean JSON
   app.get("/api/news", async (req, res) => {
     try {
-      const csvPath = path.join(process.cwd(), 'media/news/rdi_web_news.csv');
+      const csvPath = path.join(process.cwd(), 'dist/assets/News/rdi_web_news.csv');
       fs.readFile(csvPath, (err, buffer) => {
         if (err) {
           console.error('Local news CSV read error:', err);
@@ -604,7 +604,7 @@ async function startServer() {
   // Serve proxy route to fetch research CSV and convert it to clean JSON
   app.get("/api/research", async (req, res) => {
     try {
-      const csvPath = path.join(process.cwd(), 'media/Research/rdi_web_research.csv');
+      const csvPath = path.join(process.cwd(), 'https://kgmlighting.com.cn/research/rdi_web_research.csv');
       fs.readFile(csvPath, (err, buffer) => {
         if (err) {
           console.error('Local research CSV read error:', err);

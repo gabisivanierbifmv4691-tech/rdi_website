@@ -23,14 +23,14 @@ export default function Footer({ lang }: FooterProps) {
   const getSocialIcon = (key: string, DefaultComponent: React.ComponentType<any>) => {
     return (
       <img 
-        src={`/media/public/rdi_${key}.svg`} 
+        src={`https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_${key}.svg`} 
         alt={key} 
         className="w-5 h-5 object-contain invert opacity-30 hover:opacity-100 transition-opacity"
         referrerPolicy="no-referrer"
         onError={(e) => {
           const target = e.currentTarget;
-          if (target.src.indexOf('/media/public/') === -1) {
-            target.src = `/media/public/rdi_${key}.svg`;
+          if (target.src.indexOf('https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/') === -1) {
+            target.src = `https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_${key}.svg`;
           }
         }}
       />

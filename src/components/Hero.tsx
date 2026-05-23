@@ -18,7 +18,7 @@ export default function Hero({ lang }: HeroProps) {
       id: 'shanghai-psa',
       title: lang === 'cn' ? '上海当代艺术博物馆' : 'Shanghai Power Station of Art',
       location: lang === 'cn' ? '上海' : 'Shanghai',
-      image: 'https://rdilighting.com/projects/shanghai-psa/hero-image.jpg',
+      image: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/projects/shanghai-psa/hero-image.jpg',
     }
   ];
 

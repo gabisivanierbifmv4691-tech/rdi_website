@@ -118,20 +118,20 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
               { id: 'zibo-mixc', aspect: 'aspect-[4/4] md:aspect-auto h-full min-h-[300px]', span: '' },
             ],
             hiddenMenu: {
-              projects: '/media/public/projects.webp',
-              research: '/media/public/research.webp',
-              news: '/media/public/news.webp',
-              about: '/media/public/about.webp'
+              projects: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/projects.webp',
+              research: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/research.webp',
+              news: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/news.webp',
+              about: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/about.webp'
             },
             icons: {
-              bilibili: '/media/public/rdi_bilibili.svg',
-              facebook: '/media/public/rdi_facebook.svg',
-              instagram: '/media/public/rdi_instagram.svg',
-              tiktok: '/media/public/rdi_tiktok.svg',
-              rednote: '/media/public/rdi_rednote.svg',
-              wechat: '/media/public/rdi_wechat.svg',
-              linkedin: '/media/public/rdi_linkedin.svg',
-              youtube: '/media/public/rdi_youtube.svg'
+              bilibili: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_bilibili.svg',
+              facebook: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_facebook.svg',
+              instagram: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_instagram.svg',
+              tiktok: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_tiktok.svg',
+              rednote: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_rednote.svg',
+              wechat: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_wechat.svg',
+              linkedin: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_linkedin.svg',
+              youtube: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_youtube.svg'
             }
           });
         }
@@ -154,20 +154,20 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
               { id: 'zibo-mixc', aspect: 'aspect-[4/4] md:aspect-auto h-full min-h-[300px]', span: '' },
             ],
             hiddenMenu: {
-              projects: '/media/public/projects.webp',
-              research: '/media/public/research.webp',
-              news: '/media/public/news.webp',
-              about: '/media/public/about.webp'
+              projects: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/projects.webp',
+              research: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/research.webp',
+              news: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/news.webp',
+              about: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/about.webp'
             },
             icons: {
-              bilibili: '/media/public/rdi_bilibili.svg',
-              facebook: '/media/public/rdi_facebook.svg',
-              instagram: '/media/public/rdi_instagram.svg',
-              tiktok: '/media/public/rdi_tiktok.svg',
-              rednote: '/media/public/rdi_rednote.svg',
-              wechat: '/media/public/rdi_wechat.svg',
-              linkedin: '/media/public/rdi_linkedin.svg',
-              youtube: '/media/public/rdi_youtube.svg'
+              bilibili: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_bilibili.svg',
+              facebook: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_facebook.svg',
+              instagram: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_instagram.svg',
+              tiktok: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_tiktok.svg',
+              rednote: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_rednote.svg',
+              wechat: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_wechat.svg',
+              linkedin: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_linkedin.svg',
+              youtube: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_youtube.svg'
             }
           });
           setLoading(false);

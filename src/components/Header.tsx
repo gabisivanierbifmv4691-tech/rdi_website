@@ -68,11 +68,11 @@ export default function Header({ lang, onToggleLang }: HeaderProps) {
   };
 
   const bgImages: Record<string, string> = {
-    default: '/media/public/default.webp',
-    projects: homeConfig?.hiddenMenu?.projects || '/media/public/projects.webp',
-    research: homeConfig?.hiddenMenu?.research || '/media/public/research.webp',
-    news: homeConfig?.hiddenMenu?.news || '/media/public/news.webp',
-    about: homeConfig?.hiddenMenu?.about || '/media/public/about.webp'
+    default: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/default.webp',
+    projects: homeConfig?.hiddenMenu?.projects || 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/projects.webp',
+    research: homeConfig?.hiddenMenu?.research || 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/research.webp',
+    news: homeConfig?.hiddenMenu?.news || 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/news.webp',
+    about: homeConfig?.hiddenMenu?.about || 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/about.webp'
   };
 
   const [activeBg, setActiveBg] = useState(bgImages.default);
@@ -84,14 +84,14 @@ export default function Header({ lang, onToggleLang }: HeaderProps) {
   const getSocialIcon = (key: string, DefaultComponent: React.ComponentType<any>) => {
     return (
       <img 
-        src={`/media/public/rdi_${key}.svg`} 
+        src={`https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_${key}.svg`} 
         alt={key} 
         className="w-5 h-5 object-contain hover:opacity-50 transition-opacity"
         referrerPolicy="no-referrer"
         onError={(e) => {
           const target = e.currentTarget;
-          if (target.src.indexOf('/media/public/') === -1) {
-            target.src = `/media/public/rdi_${key}.svg`;
+          if (target.src.indexOf('https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/') === -1) {
+            target.src = `https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_${key}.svg`;
           }
         }}
       />
@@ -169,14 +169,14 @@ export default function Header({ lang, onToggleLang }: HeaderProps) {
               >
                 <div className="relative">
                   <img 
-                    src="/media/public/rdi_logo.svg" 
+                    src="https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_logo.svg" 
                     alt="RDI Lighting" 
                     className={`h-10 w-auto object-contain transition-all duration-500 ${(isLightPage && !isScrolled) ? '' : 'invert'}`}
                     referrerPolicy="no-referrer"
                     onError={(e) => {
                       const target = e.currentTarget;
-                      if (target.src.indexOf('/media/public/') === -1) {
-                        target.src = '/media/public/rdi_logo.svg';
+                      if (target.src.indexOf('https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/') === -1) {
+                        target.src = 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_logo.svg';
                       }
                     }}
                   />
@@ -284,14 +284,14 @@ export default function Header({ lang, onToggleLang }: HeaderProps) {
                 >
                   <div className="relative">
                     <img 
-                      src="/media/public/rdi_logo.svg" 
+                      src="https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_logo.svg" 
                       alt="RDI Lighting" 
                       className="h-10 w-auto object-contain"
                       referrerPolicy="no-referrer"
                       onError={(e) => {
                         const target = e.currentTarget;
-                        if (target.src.indexOf('/media/public/') === -1) {
-                          target.src = '/media/public/rdi_logo.svg';
+                        if (target.src.indexOf('https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/') === -1) {
+                          target.src = 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_logo.svg';
                         }
                       }}
                     />
