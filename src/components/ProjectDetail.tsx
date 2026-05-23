@@ -122,24 +122,14 @@ export default function ProjectDetail({ lang }: ProjectDetailProps) {
       });
     })(),
 
-    // Curated concept description text
+    // Curated concept description text from CSV block metadata
     description1: (lang === 'cn' ? basicInfo.conceptCN : basicInfo.conceptEN)
       ? (
           <p className="text-[18px] leading-[1.8] text-gray-700 whitespace-pre-line text-left">
             {lang === 'cn' ? basicInfo.conceptCN : basicInfo.conceptEN}
           </p>
         )
-      : (lang === 'cn' ? (
-          <>
-            <p className="text-[18px] leading-[1.8] text-gray-700">{basicInfo.titleCN} 的照明设计不仅要呼应建筑的典雅，更妥贴地满足了现代高端商业运营的功能需求。我们专注于通过简洁的灯光语言，勾勒出空间的结构美感。</p>
-            <p className="text-[18px] leading-[1.8] text-gray-700 mt-4">项目结合了最先进的LED技术与智能控制系统，在保持高度视觉舒适度的同时，实现了可持续的节能目标。每一处光影的明暗交替都经过精准计算，以营造沉浸式的空间氛围。</p>
-          </>
-        ) : (
-          <>
-            <p className="text-[18px] leading-[1.8] text-gray-700 font-light">The lighting design for {basicInfo.titleEN} supports a dialogue between heritage and modernity, translating architectural intent and materiality into a atmospheric language of light. The project unites heritage architecture and contemporary luxury into a carefully balanced ensemble.</p>
-            <p className="text-[18px] leading-[1.8] text-gray-700 mt-4 font-light">Using state-of-the-art LED technology and intelligent control systems, the design achieves high visual comfort while meeting ambitious sustainability targets. Every transition between light and shadow is precisely calibrated to create an immersive experience.</p>
-          </>
-        ))
+      : null
   };
 
   // Find next and previous projects
@@ -379,20 +369,22 @@ export default function ProjectDetail({ lang }: ProjectDetailProps) {
       ) : (
         <>
           {/* 3. Concept Section - 项目理念 */}
-          <section className="px-10 py-32 bg-gray-50/50 text-center">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-[13px] font-bold uppercase tracking-[0.4em] text-black/40 mb-12">
-                {lang === 'cn' ? '设计理念' : 'DESIGN CONCEPT'}
-              </h2>
-              <div className="text-[18px] text-gray-700 leading-relaxed font-normal text-left md:columns-1 gap-12">
-                {project.description1}
+          {project.description1 && (
+            <section className="px-10 py-32 bg-gray-50/50 text-center">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-[13px] font-bold uppercase tracking-[0.4em] text-black/40 mb-12">
+                  {lang === 'cn' ? '设计理念' : 'DESIGN CONCEPT'}
+                </h2>
+                <div className="text-[18px] text-gray-700 leading-relaxed font-normal text-left md:columns-1 gap-12">
+                  {project.description1}
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
 
           {/* Dynamic Asymmetrical Gallery Grid */}
           {basicInfo.gallery && basicInfo.gallery.length > 0 && (
-            <section className="px-10 py-24 bg-white flex justify-center border-b border-gray-100">
+            <section className="px-10 py-24 bg-white flex justify-center">
               <div className="w-full max-w-[1280px]">
                 <h2 className="text-[13px] font-bold uppercase tracking-[0.4em] text-black/40 mb-16 text-center">
                   {lang === 'cn' ? '项目精选画廊' : 'CURATED GALLERY'}
@@ -466,7 +458,7 @@ export default function ProjectDetail({ lang }: ProjectDetailProps) {
       )}
 
       {/* 4. Pagination - 翻页导航 */}
-      <section className="px-10 py-20 border-t border-gray-100 flex justify-center bg-white">
+      <section className="px-10 py-20 flex justify-center bg-white">
         <div className="w-full max-w-[1280px] flex justify-between items-center">
           <Link to={`/project/${prevProject.slug || prevProject.id}`} className="flex items-center gap-4 group">
             <ChevronLeft size={24} className="text-gray-300 group-hover:text-black group-hover:-translate-x-1 transition-all" />

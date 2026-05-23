@@ -14,6 +14,7 @@ export interface NewsItem {
   location?: string;
   tagsCN?: string;
   tagsEN?: string;
+  blocks?: any[];
 }
 
 export const newsData: NewsItem[] = [];

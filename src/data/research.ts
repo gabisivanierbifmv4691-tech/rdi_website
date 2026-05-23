@@ -14,6 +14,7 @@ export interface ResearchItem {
   location?: string;
   tagsCN?: string;
   tagsEN?: string;
+  blocks?: any[];
 }
 
 export const researchData: ResearchItem[] = [];

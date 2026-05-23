@@ -38,70 +38,6 @@ interface ProjectProviderProps {
   children: ReactNode;
 }
 
-const fallbackNewsDetails: Record<string, {
-  location?: string;
-  contentCN?: string;
-  contentEN?: string;
-  gallery?: string[];
-}> = {
-  '20240515_lda': {
-    location: 'Berlin, Germany',
-    contentEN: 'rdi international lighting has been awarded the 2024 Lighting Design Award for its groundbreaking work in sustainable urban lighting. The jury praised our innovative approach to reducing light pollution while enhancing safety.',
-    contentCN: 'rdi 国际照明凭借其在可持续城市照明领域的开创性成果，荣获 2024 年度照明设计大奖。评委会对我们在减少光污染、提高安全性方面的创新方法给予了高度评价。',
-    gallery: [
-      'https://images.unsplash.com/photo-1565019053026-6202497042a9',
-      'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158'
-    ]
-  },
-  '20240422_sun': {
-    location: 'Shanghai, China',
-    contentEN: 'Our latest panel discussion at the Lighting Summit explored how modern cities can balance aesthetic appeal with energy efficiency. Experts shared insights on the next generation of LED technologies.',
-    contentCN: '近期在照明峰会上进行的专题讨论探索了现代城市如何平衡美学吸引力与能源效率。专家们分享了关于下一代 LED 技术的见解。',
-    gallery: [
-      'https://images.unsplash.com/photo-1497366216548-37526070297c',
-      'https://images.unsplash.com/photo-1497366811353-6870744d04b2'
-    ]
-  },
-  '20250909_exh': {
-    location: 'Shanghai, China'
-  },
-  '20260515_cau': {
-    location: 'Shanghai, China',
-    contentCN: '5月11日晚，同济大学建筑与城市规划学院 CAUP 红楼钟庭化作光影交织的奇幻秘境。联合国教科文组织（UNESCO）“国际光日”注册活动暨2026年建筑物理光环境课程作业展示评审活动璀璨启幕。',
-    contentEN: 'On the evening of May 11, the Red Building Courtyard at Tongji University CAUP transformed into a fantasy realm of interwoven light and shadow. The UNESCO registered event and the 2026 Architectural Lighting Coursework Exhibition commenced.'
-  },
-  '20260501_ld': {
-    location: 'Shanghai, China',
-    contentCN: 'RDI及全体员工，向每一位辛勤耕耘的奋斗者致以诚挚敬意！祝大家五一劳动节快乐，诸事顺遂，劳有所获，岁岁安康！',
-    contentEN: 'RDI wishes you and your family a happy Labor Day, good health and every success in work.'
-  }
-};
-
-const fallbackResearchDetails: Record<string, {
-  location?: string;
-  contentCN?: string;
-  contentEN?: string;
-  gallery?: string[];
-}> = {
-  'street_lighting': {
-    location: 'Berlin, Germany',
-    contentEN: 'Our urban lighting research focuses on how smart LED technology can transform city nightscapes while reducing energy consumption by up to 40%.',
-    contentCN: '我们的城市照明研究重点关注智能 LED 技术如何在将能源消耗降低高达 40% 的同时，重塑城市夜景。',
-    gallery: [
-      'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb',
-      'https://images.unsplash.com/photo-1540518614846-7eded433c457'
-    ]
-  },
-  'museum_lighting': {
-    location: 'Paris, France',
-    contentEN: 'Exploring the transition from halogen to fiber optics and high-CRI LED solutions in preserving world-class artifacts.',
-    contentCN: '探索在保护世界级文物过程中，从卤素灯到光纤及其高显色指数 LED 解决方案的转变。',
-    gallery: [
-      'https://images.unsplash.com/photo-1565019053026-6202497042a9'
-    ]
-  }
-};
-
 async function fetchAndParseCSV(url: string): Promise<string[][]> {
   const response = await fetch(url);
   if (!response.ok) {
@@ -134,17 +70,19 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
     
     async function fetchData() {
       try {
-        const [rawRows, rawBlockRows, rawHomeRows, rawNewsRows, rawResearchRows] = await Promise.all([
+        const [rawRows, rawBlockRows, rawHomeRows, rawNewsRows, rawNewsBlockRows, rawResearchRows, rawResearchBlockRows] = await Promise.all([
           fetchAndParseCSV('/projects/rdi_web_projects.csv?v=' + Date.now()),
           fetchAndParseCSV('/projects/rdi_web_projects_blocks.csv?v=' + Date.now()),
           fetchAndParseCSV('/public/rdi_web_home.csv?v=' + Date.now()),
-          fetchAndParseCSV('/News/rdi_web_news.csv?v=' + Date.now()),
-          fetchAndParseCSV('/research/rdi_web_research.csv?v=' + Date.now())
+          fetchAndParseCSV('/news/rdi_web_news.csv?v=' + Date.now()),
+          fetchAndParseCSV('/news/rdi_web_news_blocks.csv?v=' + Date.now()),
+          fetchAndParseCSV('/research/rdi_web_research.csv?v=' + Date.now()),
+          fetchAndParseCSV('/research/rdi_web_research_blocks.csv?v=' + Date.now())
         ]);
 
         if (!active) return;
 
-        // Process block data
+        // Process project block data
         const blocksMap: Record<string, any[]> = {};
         for (let i = 0; i < rawBlockRows.length; i++) {
           const row = rawBlockRows[i];
@@ -158,6 +96,7 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
           if (
             !blockId ||
             blockId === 'project_id' ||
+            blockId === 'id' ||
             blockId.includes('字段名') ||
             blockId.includes('填写说明') ||
             blockId.includes('网页排版') ||
@@ -189,6 +128,102 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
         // Sort blocks by order
         for (const pid in blocksMap) {
           blocksMap[pid].sort((a, b) => a.order - b.order);
+        }
+
+        // Process news block data
+        const newsBlocksMap: Record<string, any[]> = {};
+        for (let i = 0; i < rawNewsBlockRows.length; i++) {
+          const row = rawNewsBlockRows[i];
+          if (row.length < 3) continue;
+          const blockId = row[0] ? row[0].trim() : '';
+          const block_order = parseInt(row[1]) || 0;
+          const block_type = row[2] ? row[2].trim() : '';
+          const layout_style = row[3] ? row[3].trim() : '';
+
+          // Skip headers
+          if (
+            !blockId ||
+            blockId === 'id' ||
+            blockId === 'project_id' ||
+            blockId.includes('字段名') ||
+            blockId.includes('填写说明') ||
+            blockId.includes('网页排版') ||
+            blockId.includes('是否选填') ||
+            block_type === 'block_type'
+          ) {
+            continue;
+          }
+
+          const c1_cn = row[4] ? row[4].trim() : '';
+          const c1_en = row[5] ? row[5].trim() : '';
+          const c2_cn = row[6] ? row[6].trim() : '';
+          const c2_en = row[7] ? row[7].trim() : '';
+
+          if (!newsBlocksMap[blockId]) {
+            newsBlocksMap[blockId] = [];
+          }
+          newsBlocksMap[blockId].push({
+            order: block_order,
+            type: block_type,
+            style: layout_style,
+            c1_cn,
+            c1_en,
+            c2_cn,
+            c2_en
+          });
+        }
+
+        // Sort news blocks by order
+        for (const nid in newsBlocksMap) {
+          newsBlocksMap[nid].sort((a, b) => a.order - b.order);
+        }
+
+        // Process research block data
+        const researchBlocksMap: Record<string, any[]> = {};
+        for (let i = 0; i < rawResearchBlockRows.length; i++) {
+          const row = rawResearchBlockRows[i];
+          if (row.length < 3) continue;
+          const blockId = row[0] ? row[0].trim() : '';
+          const block_order = parseInt(row[1]) || 0;
+          const block_type = row[2] ? row[2].trim() : '';
+          const layout_style = row[3] ? row[3].trim() : '';
+
+          // Skip headers
+          if (
+            !blockId ||
+            blockId === 'id' ||
+            blockId === 'project_id' ||
+            blockId.includes('字段名') ||
+            blockId.includes('填写说明') ||
+            blockId.includes('网页排版') ||
+            blockId.includes('是否选填') ||
+            block_type === 'block_type'
+          ) {
+            continue;
+          }
+
+          const c1_cn = row[4] ? row[4].trim() : '';
+          const c1_en = row[5] ? row[5].trim() : '';
+          const c2_cn = row[6] ? row[6].trim() : '';
+          const c2_en = row[7] ? row[7].trim() : '';
+
+          if (!researchBlocksMap[blockId]) {
+            researchBlocksMap[blockId] = [];
+          }
+          researchBlocksMap[blockId].push({
+            order: block_order,
+            type: block_type,
+            style: layout_style,
+            c1_cn,
+            c1_en,
+            c2_cn,
+            c2_en
+          });
+        }
+
+        // Sort research blocks by order
+        for (const rid in researchBlocksMap) {
+          researchBlocksMap[rid].sort((a, b) => a.order - b.order);
         }
 
         // Process main project data
@@ -436,7 +471,28 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
           const date = row[10] ? row[10].trim() : '';
 
           const category = tagsEN ? tagsEN.toUpperCase() : 'NEWS';
-          const detail = fallbackNewsDetails[idCell] || {};
+          const blocks = newsBlocksMap[idCell] || [];
+
+          // Dynamically extract concept text and gallery from blocks if needed
+          let contentCN = '';
+          let contentEN = '';
+          const gallerySet = new Set<string>();
+
+          for (const block of blocks) {
+            if (!contentCN && block.type === 'text_1col') {
+              contentCN = block.c1_cn ? block.c1_cn.replace(/^###.*?\n/gm, '').replace(/^###.*/gm, '').trim() : '';
+              contentEN = block.c1_en ? block.c1_en.replace(/^###.*?\n/gm, '').replace(/^###.*/gm, '').trim() : '';
+            }
+            if (block.type === 'image_full' && block.c1_cn) {
+              gallerySet.add(block.c1_cn.trim());
+            } else if (block.type === 'text_img' && block.c2_cn) {
+              gallerySet.add(block.c2_cn.trim());
+            } else if (block.type === 'image_grid' && block.c1_cn) {
+              const urls = block.c1_cn.split(',').map((u: string) => u.trim()).filter(Boolean);
+              urls.forEach((u: string) => gallerySet.add(u));
+            }
+          }
+          const gallery = Array.from(gallerySet);
 
           parsedNews.push({
             id: idCell,
@@ -449,10 +505,11 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
             span,
             tagsCN,
             tagsEN,
-            location: detail.location || '',
-            contentCN: detail.contentCN || '',
-            contentEN: detail.contentEN || '',
-            gallery: detail.gallery || []
+            location: '',
+            contentCN,
+            contentEN,
+            gallery,
+            blocks
           });
         }
         setNews(parsedNews.length > 0 ? parsedNews : fallbackNews);
@@ -491,7 +548,28 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
           const date = row[10] ? row[10].trim() : '';
 
           const category = tagsEN ? tagsEN.toUpperCase() : 'URBAN';
-          const detail = fallbackResearchDetails[idCell] || {};
+          const blocks = researchBlocksMap[idCell] || [];
+
+          // Dynamically extract content text and gallery from blocks if needed
+          let contentCN = '';
+          let contentEN = '';
+          const gallerySet = new Set<string>();
+
+          for (const block of blocks) {
+            if (!contentCN && block.type === 'text_1col') {
+              contentCN = block.c1_cn ? block.c1_cn.replace(/^###.*?\n/gm, '').replace(/^###.*/gm, '').trim() : '';
+              contentEN = block.c1_en ? block.c1_en.replace(/^###.*?\n/gm, '').replace(/^###.*/gm, '').trim() : '';
+            }
+            if (block.type === 'image_full' && block.c1_cn) {
+              gallerySet.add(block.c1_cn.trim());
+            } else if (block.type === 'text_img' && block.c2_cn) {
+              gallerySet.add(block.c2_cn.trim());
+            } else if (block.type === 'image_grid' && block.c1_cn) {
+              const urls = block.c1_cn.split(',').map((u: string) => u.trim()).filter(Boolean);
+              urls.forEach((u: string) => gallerySet.add(u));
+            }
+          }
+          const gallery = Array.from(gallerySet);
 
           parsedResearch.push({
             id: idCell,
@@ -504,10 +582,11 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
             span,
             tagsCN,
             tagsEN,
-            location: detail.location || '',
-            contentCN: detail.contentCN || '',
-            contentEN: detail.contentEN || '',
-            gallery: detail.gallery || []
+            location: '',
+            contentCN,
+            contentEN,
+            gallery,
+            blocks
           });
         }
         setResearch(parsedResearch.length > 0 ? parsedResearch : fallbackResearch);

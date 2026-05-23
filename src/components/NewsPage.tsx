@@ -140,7 +140,7 @@ export default function NewsPage({ lang }: NewsPageProps) {
               <Link 
                 key={item.id} 
                 to={`/news/${item.id}`}
-                className={`${item.aspect || 'aspect-square'} ${item.span || ''}`}
+                className={`block w-full ${item.aspect || 'aspect-square'} ${item.span || ''}`}
               >
                 <motion.div
                   layout
