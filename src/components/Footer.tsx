@@ -52,7 +52,7 @@ export default function Footer({ lang }: FooterProps) {
           { name: 'PRIVACY POLICY', link: '/privacy' },
           { name: 'IMPRINT', link: '/imprint' },
         ],
-    copy: lang === 'cn' ? '© 2026 RDI瑞照明国际照明设计. 版权所有.' : '© 2026 RDESIGN LIGHTING. ALL RIGHTS RESERVED.',
+    copy: lang === 'cn' ? '© 2026 RDI瑞照明国际照明设计. 版权所有.' : '© 2026 RDESIGN INTERNATIONALLIGHTING. ALL RIGHTS RESERVED.',
   };
 
   return (
