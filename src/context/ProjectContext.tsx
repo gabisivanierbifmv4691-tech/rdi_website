@@ -228,6 +228,7 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
 
         // Process main project data
         const parsedProjects: Project[] = [];
+        const seenProjectIds = new Set<string>();
         for (let i = 0; i < rawRows.length; i++) {
           const row = rawRows[i];
           if (row.length < 5) continue;
@@ -249,6 +250,8 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
           }
 
           if (!idCell) continue;
+          if (seenProjectIds.has(idCell)) continue;
+          seenProjectIds.add(idCell);
 
           const idNum = parseInt(noCell) || (i - 4);
           const titleCN = row[3] ? row[3].trim() : '';
@@ -343,10 +346,10 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
         const heroSlides: string[] = [];
         const gridItems: { id: string; aspect: string; span: string }[] = [];
         const hiddenMenu = {
-          projects: 'https://kgmlighting.com.cn/public/projects.webp',
-          research: 'https://kgmlighting.com.cn/public/research.webp',
-          news: 'https://kgmlighting.com.cn/public/news.webp',
-          about: 'https://kgmlighting.com.cn/public/about.webp'
+          projects: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/projects.webp',
+          research: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/research.webp',
+          news: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/news.webp',
+          about: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/about.webp'
         };
         const icons: Record<string, string> = {};
 
@@ -439,6 +442,7 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
 
         // Process News config CSV data
         const parsedNews: NewsItem[] = [];
+        const seenNewsIds = new Set<string>();
         for (let i = 0; i < rawNewsRows.length; i++) {
           const row = rawNewsRows[i];
           if (row.length < 5) continue;
@@ -460,6 +464,8 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
           }
 
           if (!idCell) continue;
+          if (seenNewsIds.has(idCell)) continue;
+          seenNewsIds.add(idCell);
 
           const titleCN = row[3] ? row[3].trim() : '';
           const titleEN = row[4] ? row[4].trim() : '';
@@ -516,6 +522,7 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
 
         // Process Research config CSV data
         const parsedResearch: ResearchItem[] = [];
+        const seenResearchIds = new Set<string>();
         for (let i = 0; i < rawResearchRows.length; i++) {
           const row = rawResearchRows[i];
           if (row.length < 5) continue;
@@ -537,6 +544,8 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
           }
 
           if (!idCell) continue;
+          if (seenResearchIds.has(idCell)) continue;
+          seenResearchIds.add(idCell);
 
           const titleCN = row[3] ? row[3].trim() : '';
           const titleEN = row[4] ? row[4].trim() : '';

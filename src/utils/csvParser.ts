@@ -57,71 +57,14 @@ export function parseCSV(csvText: string): string[][] {
 }
 
 /**
- * Determine Project category from labels/tags.
- * Categories: 'CULTURAL', 'OFFICE', 'ART', 'HOSPITALITY', 'LANDSCAPE'
+ * Determine Project category dynamically from labels/tags.
  */
 export function getCategoryFromTags(tagsEn: string, tagsCn: string): string {
-  const tEn = (tagsEn || '').toUpperCase();
-  const tCn = (tagsCn || '');
-  if (
-    tEn.includes('CULTURAL') || 
-    tEn.includes('MUSEUM') || 
-    tEn.includes('EXHIBITION') || 
-    tEn.includes('LIBRARY') || 
-    tEn.includes('SHOW') ||
-    tCn.includes('文化') || 
-    tCn.includes('博物馆') || 
-    tCn.includes('展厅') || 
-    tCn.includes('展陈') ||
-    tCn.includes('展外')
-  ) {
-    return 'CULTURAL';
+  if (tagsEn) {
+    return tagsEn.split(/[,，、]/)[0]?.trim().toUpperCase() || 'PROJECT';
   }
-  if (
-    tEn.includes('OFFICE') || 
-    tEn.includes('ATRIUM') ||
-    tCn.includes('办公') ||
-    tCn.includes('写字楼')
-  ) {
-    return 'OFFICE';
+  if (tagsCn) {
+    return tagsCn.split(/[,，、]/)[0]?.trim() || 'PROJECT';
   }
-  if (
-    tEn.includes('ART') || 
-    tEn.includes('SCULPTURE') || 
-    tEn.includes('INSTALLATION') || 
-    tCn.includes('艺术') || 
-    tCn.includes('装置') || 
-    tCn.includes('雕塑')
-  ) {
-    return 'ART';
-  }
-  if (
-    tEn.includes('HOTEL') || 
-    tEn.includes('HOSPITALITY') || 
-    tEn.includes('LOBBY') || 
-    tCn.includes('酒店') || 
-    tCn.includes('大堂') ||
-    tCn.includes('餐饮')
-  ) {
-    return 'HOSPITALITY';
-  }
-  if (
-    tEn.includes('LANDSCAPE') || 
-    tEn.includes('EXTERNAL') || 
-    tEn.includes('EXTERIOR') || 
-    tEn.includes('FACADE') || 
-    tEn.includes('GARDEN') || 
-    tEn.includes('COMMERCIAL') || 
-    tEn.includes('TOWERS') ||
-    tEn.includes('TALL') ||
-    tCn.includes('景观') || 
-    tCn.includes('外观') || 
-    tCn.includes('外立面') || 
-    tCn.includes('商业') || 
-    tCn.includes('广场') ||
-    tCn.includes('超高层')
-  ) {
-    return 'LANDSCAPE';
-  }
-  return 'CULTURAL'; // Default backup
+  return 'PROJECT';
 }

@@ -458,27 +458,51 @@ export default function ProjectDetail({ lang }: ProjectDetailProps) {
       )}
 
       {/* 4. Pagination - 翻页导航 */}
-      <section className="px-10 py-20 flex justify-center bg-white">
-        <div className="w-full max-w-[1280px] flex justify-between items-center">
-          <Link to={`/project/${prevProject.slug || prevProject.id}`} className="flex items-center gap-4 group">
-            <ChevronLeft size={24} className="text-gray-300 group-hover:text-black group-hover:-translate-x-1 transition-all" />
-            <div className="text-left hidden md:block">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">{lang === 'cn' ? '上一个' : 'PREVIOUS'}</span>
-              <span className="text-xs font-bold uppercase transition-colors group-hover:text-black shadow-none border-none">
-                {lang === 'cn' ? prevProject.titleCN : prevProject.titleEN}
-              </span>
-            </div>
+      <section className="px-10 py-20 flex justify-center bg-white border-none">
+        <div className="w-full max-w-[1280px] flex flex-col md:flex-row items-center justify-between gap-8">
+          {/* Previous Project Button */}
+          {prevProject ? (
+            <Link 
+              to={`/project/${prevProject.slug || prevProject.id}`} 
+              className="flex items-center gap-3 group text-left max-w-full md:max-w-[350px] w-full md:w-auto"
+            >
+              <ChevronLeft size={20} className="text-gray-300 group-hover:text-black group-hover:-translate-x-1 transition-all shrink-0" />
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 block">
+                  {lang === 'cn' ? '上一个' : 'PREVIOUS'}
+                </span>
+                <span className="text-xs font-bold uppercase transition-colors group-hover:text-black line-clamp-1 leading-normal">
+                  {lang === 'cn' ? prevProject.titleCN : prevProject.titleEN}
+                </span>
+              </div>
+            </Link>
+          ) : <div className="hidden md:block w-[350px]" />}
+
+          {/* More Projects in the Center */}
+          <Link 
+            to="/projects" 
+            className="text-[14px] font-bold uppercase tracking-[0.4em] text-gray-900 hover:opacity-60 transition-opacity whitespace-nowrap py-2 md:py-0"
+          >
+            {lang === 'cn' ? '更多作品' : 'More Projects'}
           </Link>
-          
-          <Link to={`/project/${nextProject.slug || nextProject.id}`} className="flex items-center gap-4 group">
-            <div className="text-right hidden md:block">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">{lang === 'cn' ? '下一个' : 'NEXT'}</span>
-              <span className="text-xs font-bold uppercase transition-colors group-hover:text-black shadow-none border-none">
-                {lang === 'cn' ? nextProject.titleCN : nextProject.titleEN}
-              </span>
-            </div>
-            <ChevronRight size={24} className="text-gray-300 group-hover:text-black group-hover:translate-x-1 transition-all" />
-          </Link>
+
+          {/* Next Project Button */}
+          {nextProject ? (
+            <Link 
+              to={`/project/${nextProject.slug || nextProject.id}`} 
+              className="flex items-center gap-3 group text-right max-w-full md:max-w-[350px] w-full md:w-auto justify-end"
+            >
+              <div className="flex flex-col items-end">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 block">
+                  {lang === 'cn' ? '下一个' : 'NEXT'}
+                </span>
+                <span className="text-xs font-bold uppercase transition-colors group-hover:text-black line-clamp-1 leading-normal">
+                  {lang === 'cn' ? nextProject.titleCN : nextProject.titleEN}
+                </span>
+              </div>
+              <ChevronRight size={20} className="text-gray-300 group-hover:text-black group-hover:translate-x-1 transition-all shrink-0" />
+            </Link>
+          ) : <div className="hidden md:block w-[350px]" />}
         </div>
       </section>
     </div>

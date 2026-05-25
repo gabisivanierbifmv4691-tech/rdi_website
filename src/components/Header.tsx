@@ -21,10 +21,11 @@ interface HeaderProps {
 }
 
 export default function Header({ lang, onToggleLang }: HeaderProps) {
-  const { homeConfig } = useProjects();
+  const { homeConfig, projects = [], news = [], research = [] } = useProjects();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [isExpanding, setIsExpanding] = useState(false);
   const [isLogoHovered, setIsLogoHovered] = useState(false);
   const [isMenuLogoHovered, setIsMenuLogoHovered] = useState(false);
@@ -129,6 +130,72 @@ export default function Header({ lang, onToggleLang }: HeaderProps) {
     }
   }, [isMenuOpen, isSearchOpen]);
 
+  // Handle escape key to close search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsSearchOpen(false);
+        setSearchQuery('');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const getFilteredResults = () => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return { projects: [], news: [], research: [] };
+
+    const filteredProjects = projects.filter(p => {
+      return (
+        (p.titleCN && p.titleCN.toLowerCase().includes(query)) ||
+        (p.titleEN && p.titleEN.toLowerCase().includes(query)) ||
+        (p.conceptCN && p.conceptCN.toLowerCase().includes(query)) ||
+        (p.conceptEN && p.conceptEN.toLowerCase().includes(query)) ||
+        (itemMatchesTags(p.tagsCN, query)) ||
+        (itemMatchesTags(p.tagsEN, query)) ||
+        (p.location && p.location.toLowerCase().includes(query)) ||
+        (p.locationEN && p.locationEN.toLowerCase().includes(query))
+      );
+    });
+
+    const filteredNews = news.filter(n => {
+      return (
+        (n.titleCN && n.titleCN.toLowerCase().includes(query)) ||
+        (n.titleEN && n.titleEN.toLowerCase().includes(query)) ||
+        (n.contentCN && n.contentCN.toLowerCase().includes(query)) ||
+        (n.contentEN && n.contentEN.toLowerCase().includes(query)) ||
+        (itemMatchesTags(n.tagsCN, query)) ||
+        (itemMatchesTags(n.tagsEN, query))
+      );
+    });
+
+    const filteredResearch = research.filter(r => {
+      return (
+        (r.titleCN && r.titleCN.toLowerCase().includes(query)) ||
+        (r.titleEN && r.titleEN.toLowerCase().includes(query)) ||
+        (r.contentCN && r.contentCN.toLowerCase().includes(query)) ||
+        (r.contentEN && r.contentEN.toLowerCase().includes(query)) ||
+        (itemMatchesTags(r.tagsCN, query)) ||
+        (itemMatchesTags(r.tagsEN, query))
+      );
+    });
+
+    return {
+      projects: filteredProjects,
+      news: filteredNews,
+      research: filteredResearch
+    };
+  };
+
+  const itemMatchesTags = (tags: string | undefined, query: string) => {
+    if (!tags) return false;
+    return tags.toLowerCase().includes(query);
+  };
+
+  const results = getFilteredResults();
+  const hasResults = results.projects.length > 0 || results.news.length > 0 || results.research.length > 0;
+
   const menuItems = lang === 'cn' 
     ? [
         { name: '首页', link: '/' }, 
@@ -206,9 +273,11 @@ export default function Header({ lang, onToggleLang }: HeaderProps) {
           <div className={`flex items-center gap-2 md:gap-3 ${textColor}`}>
             <button 
               onClick={onToggleLang}
-              className="flex items-center gap-1 text-[13px] font-bold tracking-widest transition-opacity hover:opacity-60 cursor-pointer uppercase translate-x-[7px]"
+              className={`flex items-center gap-1 font-bold tracking-widest transition-opacity hover:opacity-60 cursor-pointer uppercase translate-x-[7px] ${
+                lang === 'cn' ? 'text-[14px]' : 'text-[15px]'
+              }`}
             >
-              {lang === 'cn' ? 'EN' : 'CN'}
+              {lang === 'cn' ? 'EN' : '中'}
             </button>
             <Search 
               size={22} 
@@ -255,10 +324,10 @@ export default function Header({ lang, onToggleLang }: HeaderProps) {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ clipPath: "inset(0% 0% 100% 0%)" }}
+            animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
+            exit={{ clipPath: "inset(0% 0% 100% 0%)" }}
+            transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
             className="fixed inset-0 z-[100] flex flex-col bg-white overflow-y-auto"
           >
             {/* Background Image with Overlay */}
@@ -318,9 +387,11 @@ export default function Header({ lang, onToggleLang }: HeaderProps) {
                 <div className="flex items-center gap-2 md:gap-3">
                   <button 
                     onClick={() => { onToggleLang(); setIsMenuOpen(false); }}
-                    className="text-[13px] font-bold tracking-widest hover:opacity-60 transition-opacity translate-x-[15px]"
+                    className={`font-bold tracking-widest hover:opacity-60 transition-opacity translate-x-[15px] ${
+                      lang === 'cn' ? 'text-[14px]' : 'text-[15px]'
+                    }`}
                   >
-                    {lang === 'cn' ? 'EN' : 'CN'}
+                    {lang === 'cn' ? 'EN' : '中'}
                   </button>
                   <Search 
                     size={22} 
@@ -350,9 +421,9 @@ export default function Header({ lang, onToggleLang }: HeaderProps) {
                 ].map((item, i) => (
                   <motion.div
                     key={item.name}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                    transition={{ duration: 0.6, delay: i * 0.08 + 0.35, ease: [0.25, 1, 0.5, 1] }}
                     onMouseEnter={() => setActiveBg(bgImages[item.key])}
                     onMouseLeave={() => setActiveBg(bgImages.default)}
                   >
@@ -412,38 +483,250 @@ export default function Header({ lang, onToggleLang }: HeaderProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="fixed inset-0 z-[110] bg-black/95 flex flex-col"
+            className="fixed inset-0 z-[110] bg-white flex flex-col"
           >
-            <div className="flex justify-end p-8 md:p-12">
-              <button 
-                onClick={() => setIsSearchOpen(false)}
-                className="text-white hover:opacity-60 transition-opacity px-4 py-2"
-              >
-                <X size={32} strokeWidth={1.5} />
-              </button>
-            </div>
-            
-            <div className="flex-grow flex items-center justify-center px-6 md:px-24">
-              <motion.div 
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="w-full max-w-4xl"
-              >
-                <input 
-                  autoFocus
-                  type="text" 
-                  placeholder={t.searchPlaceholder}
-                  className="w-full bg-transparent border-b border-white/30 py-4 text-2xl md:text-5xl text-white font-light focus:outline-none focus:border-white transition-colors"
-                />
-                <div className="mt-8 flex flex-wrap gap-4 text-white/50 text-sm">
-                  <span>{lang === 'cn' ? '热门:' : 'Popular:'}</span>
-                  <button className="hover:text-white transition-colors">Residential</button>
-                  <button className="hover:text-white transition-colors">Public Space</button>
-                  <button className="hover:text-white transition-colors">Art Installation</button>
+            {/* Replicating Header Row to keep Logo in original position exactly */}
+            <div className="w-full py-3 px-6 md:px-12 flex justify-center items-center text-black shrink-0">
+              <div className="w-full max-w-[1280px] flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <div 
+                    onClick={(e) => { setIsSearchOpen(false); setSearchQuery(''); handleLogoClick(e, logoRef, false); }}
+                    className="relative flex items-center cursor-pointer group"
+                  >
+                    <div className="relative">
+                      <img 
+                        src="https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_logo.svg" 
+                        alt="RDI Lighting" 
+                        className="h-10 w-auto object-contain"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (target.src.indexOf('https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/') === -1) {
+                            target.src = 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_logo.svg';
+                          }
+                        }}
+                      />
+                      {/* Animated Dot for feedback */}
+                      <motion.div
+                        className="absolute w-[5px] h-[5px] rounded-full sm:w-1.5 sm:h-1.5 bg-black"
+                        style={{ top: '18%', right: '3.5%' }}
+                      />
+                    </div>
+                  </div>
                 </div>
-              </motion.div>
+
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
+                    className="flex items-center group px-2 py-1 text-black hover:opacity-60 transition-opacity"
+                    aria-label="Close Search"
+                  >
+                    <X size={32} strokeWidth={1.5} />
+                  </button>
+                </div>
+              </div>
             </div>
+
+            {/* Search Input Area */}
+            <div className="w-full px-6 md:px-12 flex justify-center shrink-0">
+              <div className="w-full max-w-[1280px] pt-10 pb-6 flex flex-col">
+                <div className="flex justify-between items-center border-b border-black/15 pb-3">
+                  <input 
+                    autoFocus
+                    type="text" 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder={t.searchPlaceholder}
+                    className="w-full bg-transparent text-xl md:text-3xl text-black font-light focus:outline-none placeholder-gray-400 p-0 m-0"
+                  />
+                  {searchQuery && (
+                    <button 
+                      onClick={() => setSearchQuery('')}
+                      className="text-black/40 hover:text-black transition-colors p-2 text-xs font-mono tracking-widest uppercase mr-2 whitespace-nowrap"
+                    >
+                      {lang === 'cn' ? '清空' : 'CLEAR'}
+                    </button>
+                  )}
+                </div>
+
+                {/* Suggestions row shown when searchQuery is empty */}
+                {!searchQuery && (
+                  <div className="mt-6 flex flex-wrap gap-4 text-black/50 text-sm p-0 m-0">
+                    <span>{lang === 'cn' ? '热门:' : 'Popular:'}</span>
+                    {(lang === 'cn' 
+                      ? ['住宅', '办公', '美术馆', '商业', '文化', '建筑'] 
+                      : ['Residential', 'Office', 'Gallery', 'Commercial', 'Cultural', 'Architectural']
+                    ).map((tag) => (
+                      <button 
+                        key={tag}
+                        onClick={() => setSearchQuery(tag)}
+                        className="hover:text-black transition-colors underline decoration-black/15 underline-offset-4"
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Scrollable Results Area */}
+            {searchQuery && (
+              <div className="flex-grow overflow-y-auto pb-24 px-6 md:px-12 w-full flex justify-center scrollbar-thin">
+                <div className="w-full max-w-[1280px]">
+                {!hasResults ? (
+                  <div className="py-20 text-center text-black/40">
+                    <p className="text-2xl font-light mb-2">
+                      {lang === 'cn' ? '未找到相关内容' : 'No results found'}
+                    </p>
+                    <p className="text-base font-light">
+                      {lang === 'cn' ? '尝试搜索其他关键词，例如“住宅”或“美术馆”' : 'Try searching for other keywords, such as "Residential" or "Gallery"'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mt-8">
+                    {/* Projects Column */}
+                    <div>
+                      <div className="pb-3 mb-6">
+                        <span className="text-base font-mono font-bold tracking-[0.3em] uppercase text-black/40">
+                          {lang === 'cn' ? '设计作品' : 'PROJECTS'} ({results.projects.length})
+                        </span>
+                      </div>
+                      {results.projects.length === 0 ? (
+                        <p className="text-base text-black/30 font-light italic">
+                          {lang === 'cn' ? '无匹配作品' : 'No matching projects'}
+                        </p>
+                      ) : (
+                        <div className="space-y-6">
+                          {results.projects.map((item) => (
+                            <Link
+                              key={item.slug || item.id}
+                              to={`/project/${item.slug || item.id}`}
+                              onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
+                              className="block group"
+                            >
+                              <div className="flex gap-4">
+                                {item.image && (
+                                  <div className="w-16 h-16 shrink-0 bg-black/5 overflow-hidden">
+                                    <img 
+                                      src={item.image} 
+                                      alt="" 
+                                      className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" 
+                                      referrerPolicy="no-referrer"
+                                    />
+                                  </div>
+                                )}
+                                <div className="space-y-1">
+                                  <h4 className="text-base font-bold text-black group-hover:text-amber-600 transition-colors leading-tight line-clamp-2">
+                                    {lang === 'cn' ? item.titleCN : item.titleEN}
+                                  </h4>
+                                  <p className="text-sm text-black/40 font-light">
+                                    {lang === 'cn' ? item.location : item.locationEN}
+                                  </p>
+                                </div>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Research Column */}
+                    <div>
+                      <div className="pb-3 mb-6">
+                        <span className="text-base font-mono font-bold tracking-[0.3em] uppercase text-black/40">
+                          {lang === 'cn' ? '学术研究' : 'RESEARCH'} ({results.research.length})
+                        </span>
+                      </div>
+                      {results.research.length === 0 ? (
+                        <p className="text-base text-black/30 font-light italic">
+                          {lang === 'cn' ? '无匹配研究' : 'No matching research'}
+                        </p>
+                      ) : (
+                        <div className="space-y-6">
+                          {results.research.map((item) => (
+                            <Link
+                              key={item.id}
+                              to={`/research/${item.id}`}
+                              onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
+                              className="block group"
+                            >
+                              <div className="flex gap-4">
+                                {item.image && (
+                                  <div className="w-16 h-16 shrink-0 bg-black/5 overflow-hidden">
+                                    <img 
+                                      src={item.image} 
+                                      alt="" 
+                                      className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" 
+                                      referrerPolicy="no-referrer"
+                                    />
+                                  </div>
+                                )}
+                                <div className="space-y-1">
+                                  <h4 className="text-base font-bold text-black group-hover:text-amber-600 transition-colors leading-tight line-clamp-2">
+                                    {lang === 'cn' ? item.titleCN : item.titleEN}
+                                  </h4>
+                                  <p className="text-xs text-black/40 font-mono">
+                                    {item.date}
+                                  </p>
+                                </div>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* News Column */}
+                    <div>
+                      <div className="pb-3 mb-6">
+                        <span className="text-base font-mono font-bold tracking-[0.3em] uppercase text-black/40">
+                          {lang === 'cn' ? '新闻动态' : 'NEWS'} ({results.news.length})
+                        </span>
+                      </div>
+                      {results.news.length === 0 ? (
+                        <p className="text-base text-black/30 font-light italic">
+                          {lang === 'cn' ? '无匹配新闻' : 'No matching news'}
+                        </p>
+                      ) : (
+                        <div className="space-y-6">
+                          {results.news.map((item) => (
+                            <Link
+                              key={item.id}
+                              to={`/news/${item.id}`}
+                              onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
+                              className="block group"
+                            >
+                              <div className="flex gap-4">
+                                {item.image && (
+                                  <div className="w-16 h-16 shrink-0 bg-black/5 overflow-hidden">
+                                    <img 
+                                      src={item.image} 
+                                      alt="" 
+                                      className="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" 
+                                      referrerPolicy="no-referrer"
+                                    />
+                                  </div>
+                                )}
+                                <div className="space-y-1">
+                                  <h4 className="text-base font-bold text-black group-hover:text-amber-600 transition-colors leading-tight line-clamp-2">
+                                    {lang === 'cn' ? item.titleCN : item.titleEN}
+                                  </h4>
+                                  <p className="text-xs text-black/40 font-mono">
+                                    {item.date}
+                                  </p>
+                                </div>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           </motion.div>
         )}
       </AnimatePresence>
