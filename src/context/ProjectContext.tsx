@@ -39,7 +39,20 @@ interface ProjectProviderProps {
 }
 
 async function fetchAndParseCSV(url: string): Promise<string[][]> {
-  const response = await fetch(url);
+  const timestamp = Date.now();
+  // Dynamically append a fresh timestamp and a random parameter to completely bypass any CDN / proxy / browser cache
+  const finalUrl = url.includes('?') 
+    ? `${url}&_t=${timestamp}&_r=${Math.random().toString(36).substring(2, 10)}` 
+    : `${url}?_t=${timestamp}&_r=${Math.random().toString(36).substring(2, 10)}`;
+
+  const response = await fetch(finalUrl, {
+    cache: 'no-store',
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    }
+  });
   if (!response.ok) {
     throw new Error(`Failed to fetch ${url}, status: ${response.status}`);
   }
