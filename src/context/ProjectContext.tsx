@@ -242,6 +242,7 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
         // Process main project data
         const parsedProjects: Project[] = [];
         const seenProjectIds = new Set<string>();
+        const seenNumericIds = new Set<number>();
         for (let i = 0; i < rawRows.length; i++) {
           const row = rawRows[i];
           if (row.length < 5) continue;
@@ -266,7 +267,14 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
           if (seenProjectIds.has(idCell)) continue;
           seenProjectIds.add(idCell);
 
-          const idNum = parseInt(noCell) || (i - 4);
+          let idNum = parseInt(noCell) || (i - 4);
+          if (isNaN(idNum) || idNum <= 0 || seenNumericIds.has(idNum)) {
+            idNum = parsedProjects.length + 1;
+            while (seenNumericIds.has(idNum)) {
+              idNum++;
+            }
+          }
+          seenNumericIds.add(idNum);
           const titleCN = row[3] ? row[3].trim() : '';
           const titleEN = row[4] ? row[4].trim() : '';
           const locationCN = row[5] ? row[5].trim() : '';
@@ -293,8 +301,15 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
 
           for (const block of blocks) {
             if (!conceptCN && block.type === 'text_1col') {
-              conceptCN = block.c1_cn ? block.c1_cn.replace(/^###.*?\n/gm, '').replace(/^###.*/gm, '').trim() : '';
-              conceptEN = block.c1_en ? block.c1_en.replace(/^###.*?\n/gm, '').replace(/^###.*/gm, '').trim() : '';
+              const cnRaw = block.c1_cn ? block.c1_cn.replace(/^###.*?\n/gm, '').replace(/^###.*/gm, '').trim() : '';
+              const enRaw = block.c1_en ? block.c1_en.replace(/^###.*?\n/gm, '').replace(/^###.*/gm, '').trim() : '';
+              
+              if (cnRaw && /[\u4e00-\u9fa5]/.test(cnRaw)) {
+                conceptCN = cnRaw;
+              } else {
+                conceptCN = enRaw;
+              }
+              conceptEN = enRaw;
             }
             if (block.type === 'image_full' && block.c1_cn) {
               gallerySet.add(block.c1_cn.trim());
