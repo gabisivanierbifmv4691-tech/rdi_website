@@ -199,7 +199,6 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
           const blockId = row[0] ? row[0].trim() : '';
           const block_order = parseInt(row[1]) || 0;
           const block_type = row[2] ? row[2].trim() : '';
-          const layout_style = row[3] ? row[3].trim() : '';
 
           // Skip headers
           if (
@@ -215,10 +214,11 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
             continue;
           }
 
-          const c1_cn = row[4] ? row[4].trim() : '';
-          const c1_en = row[5] ? row[5].trim() : '';
-          const c2_cn = row[6] ? row[6].trim() : '';
-          const c2_en = row[7] ? row[7].trim() : '';
+          const title_cn = row[3] ? row[3].trim() : '';
+          const title_en = row[4] ? row[4].trim() : '';
+          const body_cn = row[5] ? row[5].trim() : '';
+          const body_en = row[6] ? row[6].trim() : '';
+          const image_refs = row[7] ? row[7].trim() : '';
 
           if (!researchBlocksMap[blockId]) {
             researchBlocksMap[blockId] = [];
@@ -226,11 +226,16 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
           researchBlocksMap[blockId].push({
             order: block_order,
             type: block_type,
-            style: layout_style,
-            c1_cn,
-            c1_en,
-            c2_cn,
-            c2_en
+            title_cn,
+            title_en,
+            body_cn,
+            body_en,
+            image_refs,
+            // Backwards compatibility for templates or prior components
+            c1_cn: body_cn,
+            c1_en: body_en,
+            c2_cn: image_refs,
+            c2_en: image_refs
           });
         }
 
@@ -549,11 +554,22 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
         setNews(parsedNews.length > 0 ? parsedNews : fallbackNews);
 
         // Process Research config CSV data
+        const sanitizeAspect = (aspectStr: string): string => {
+          const norm = (aspectStr || '').trim().toLowerCase();
+          if (!norm) return 'aspect-square';
+          if (norm.includes('aspect-')) return norm;
+          if (norm === '1:1' || norm.includes('1:01:00') || norm.includes('1:01')) return 'aspect-square';
+          if (norm === '3:4' || norm.includes('3:04:00') || norm.includes('3:04')) return 'aspect-[3/4]';
+          if (norm === '4:3' || norm.includes('4:03:00') || norm.includes('4:03')) return 'aspect-[4/3]';
+          if (norm === '16:9' || norm.includes('16:09') || norm.includes('4:09:00') || norm.includes('4:09')) return 'aspect-video';
+          return norm;
+        };
+
         const parsedResearch: ResearchItem[] = [];
         const seenResearchIds = new Set<string>();
         for (let i = 0; i < rawResearchRows.length; i++) {
           const row = rawResearchRows[i];
-          if (row.length < 5) continue;
+          if (row.length < 3) continue;
 
           const firstCell = row[0] ? row[0].trim() : '';
           const noCell = row[1] ? row[1].trim() : '';
@@ -566,6 +582,7 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
             firstCell.includes('填写说明') || 
             firstCell.includes('网页排版') || 
             firstCell.includes('是否选填') ||
+            idCell.includes('id') ||
             i < 5
           ) {
             continue;
@@ -575,16 +592,30 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
           if (seenResearchIds.has(idCell)) continue;
           seenResearchIds.add(idCell);
 
-          const titleCN = row[3] ? row[3].trim() : '';
-          const titleEN = row[4] ? row[4].trim() : '';
-          const tagsCN = row[5] ? row[5].trim() : '';
-          const tagsEN = row[6] ? row[6].trim() : '';
-          const image = row[7] ? row[7].trim() : '';
-          const aspect = row[8] ? row[8].trim() : '';
-          const span = row[9] ? row[9].trim() : '';
-          const date = row[10] ? row[10].trim() : '';
+          const categoryCN = row[3] ? row[3].trim() : '';
+          const categoryEN = row[4] ? row[4].trim() : '';
+          const titleCN = row[5] ? row[5].trim() : '';
+          const titleEN = row[6] ? row[6].trim() : '';
+          const tagsCN = row[7] ? row[7].trim() : '';
+          const tagsEN = row[8] ? row[8].trim() : '';
+          
+          let rawImage = row[9] ? row[9].trim() : '';
+          let image = rawImage;
+          if (image && !image.startsWith('http') && !image.startsWith('/')) {
+            image = `/research/${image}`;
+          }
 
-          const category = tagsEN ? tagsEN.toUpperCase() : 'URBAN';
+          const rawAspect = row[10] ? row[10].trim() : '';
+          const aspect = sanitizeAspect(rawAspect);
+
+          const span = row[11] ? row[11].trim() : '';
+          const date = row[12] ? row[12].trim() : '';
+          const creditsCN = row[13] ? row[13].trim() : '';
+          const creditsEN = row[14] ? row[14].trim() : '';
+          const seoMeta = row[15] ? row[15].trim() : '';
+          const geoEntities = row[16] ? row[16].trim() : '';
+
+          const category = categoryEN ? categoryEN.toUpperCase() : 'RESEARCH';
           const blocks = researchBlocksMap[idCell] || [];
 
           // Dynamically extract content text and gallery from blocks if needed
@@ -594,15 +625,18 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
 
           for (const block of blocks) {
             if (!contentCN && block.type === 'text_1col') {
-              contentCN = block.c1_cn ? block.c1_cn.replace(/^###.*?\n/gm, '').replace(/^###.*/gm, '').trim() : '';
-              contentEN = block.c1_en ? block.c1_en.replace(/^###.*?\n/gm, '').replace(/^###.*/gm, '').trim() : '';
+              contentCN = block.body_cn ? block.body_cn.replace(/^###.*?\n/gm, '').replace(/^###.*/gm, '').trim() : '';
+              contentEN = block.body_en ? block.body_en.replace(/^###.*?\n/gm, '').replace(/^###.*/gm, '').trim() : '';
             }
-            if (block.type === 'image_full' && block.c1_cn) {
-              gallerySet.add(block.c1_cn.trim());
-            } else if (block.type === 'text_img' && block.c2_cn) {
-              gallerySet.add(block.c2_cn.trim());
-            } else if (block.type === 'image_grid' && block.c1_cn) {
-              const urls = block.c1_cn.split(',').map((u: string) => u.trim()).filter(Boolean);
+            if (block.type === 'hero_title' && block.image_refs) {
+              const urls = block.image_refs.split(/[;,]/).map((u: string) => u.trim()).filter(Boolean);
+              urls.forEach((u: string) => gallerySet.add(u));
+            } else if (block.type === 'image_full' && block.image_refs) {
+              gallerySet.add(block.image_refs.trim());
+            } else if (block.type === 'text_img' && block.image_refs) {
+              gallerySet.add(block.image_refs.trim());
+            } else if (block.type === 'image_grid' && block.image_refs) {
+              const urls = block.image_refs.split(/[;,]/).map((u: string) => u.trim()).filter(Boolean);
               urls.forEach((u: string) => gallerySet.add(u));
             }
           }
@@ -614,11 +648,17 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
             titleEN,
             date,
             category,
+            categoryCN,
+            categoryEN,
             image,
             aspect,
             span,
             tagsCN,
             tagsEN,
+            creditsCN,
+            creditsEN,
+            seoMeta,
+            geoEntities,
             location: '',
             contentCN,
             contentEN,

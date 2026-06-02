@@ -7,11 +7,34 @@ import { ChevronDown } from 'lucide-react';
 
 const formatYearMonth = (dateStr: string) => {
   if (!dateStr) return '';
-  const parts = dateStr.split(/[.\-\/]/);
-  if (parts.length >= 2) {
-    return `${parts[0]}.${parts[1]}`;
+  const clean = dateStr.trim();
+  const parts = clean.split(/[.\-\/]/).map(p => p.trim());
+  if (parts.length === 3) {
+    let year = '';
+    let month = '';
+    if (parts[2].length === 4) {
+      year = parts[2];
+      month = parts[0];
+    } else if (parts[0].length === 4) {
+      year = parts[0];
+      month = parts[1];
+    }
+    if (year && month) {
+      const mNum = parseInt(month, 10);
+      if (!isNaN(mNum)) {
+        const paddedMonth = mNum < 10 ? `0${mNum}` : `${mNum}`;
+        return `${year}.${paddedMonth}`;
+      }
+      return `${year}.${month}`;
+    }
+  } else if (parts.length === 2) {
+    if (parts[0].length === 4) {
+      return `${parts[0]}.${parts[1].padStart(2, '0')}`;
+    } else if (parts[1].length === 4) {
+      return `${parts[1]}.${parts[0].padStart(2, '0')}`;
+    }
   }
-  return dateStr;
+  return clean;
 };
 
 interface ResearchPageProps {
@@ -162,24 +185,19 @@ export default function ResearchPage({ lang }: ResearchPageProps) {
                   
                   {/* Floating Content formatted exactly like Hero style */}
                   <div className="absolute bottom-6 left-6 right-6 text-white z-10 transition-transform duration-500 group-hover:translate-y-[-4px]">
-                    <h3 className="text-sm md:text-base lg:text-[17px] font-medium tracking-tight uppercase leading-snug mb-1 md:mb-1.5 line-clamp-2">
+                    {/* Category Label - bilingual */}
+                    <p className="text-[10px] md:text-[11px] font-bold tracking-[0.16em] uppercase text-white/80 mb-1.5 animate-fade-in">
+                      {lang === 'cn' ? (item.categoryCN || '学术研究') : (item.categoryEN || 'Academic Research')}
+                    </p>
+                    {/* Title */}
+                    <h3 className="text-sm md:text-base lg:text-[17px] font-semibold tracking-tight leading-snug mb-1.5 line-clamp-2">
                       {lang === 'cn' ? item.titleCN : item.titleEN}
                     </h3>
                     
-                    <p className="text-[11px] md:text-[12px] font-light opacity-85 mb-3">
-                      {formatYearMonth(item.date || '2026.05.20')}
-                    </p>
-                    
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 mt-4">
-                      <span className="text-[13px] font-bold uppercase tracking-[0.2em] text-white/70">
-                        {(() => {
-                          const tagsStr = lang === 'cn' ? item.tagsCN : item.tagsEN;
-                          if (tagsStr) {
-                            const tags = tagsStr.split(/[,，、]/).map(t => t.trim()).filter(Boolean);
-                            if (tags.length > 0) return tags[0];
-                          }
-                          return lang === 'cn' ? '研究实验' : 'RESEARCH';
-                        })()}
+                    {/* Date only, no divider line or tag */}
+                    <div className="flex items-center">
+                      <span className="text-[10px] md:text-[11px] font-light opacity-80">
+                        {formatYearMonth(item.date || '2026.05.01')}
                       </span>
                     </div>
                   </div>

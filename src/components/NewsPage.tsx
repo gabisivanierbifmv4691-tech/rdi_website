@@ -7,11 +7,34 @@ import { ChevronDown } from 'lucide-react';
 
 const formatYearMonth = (dateStr: string) => {
   if (!dateStr) return '';
-  const parts = dateStr.split(/[.\-\/]/);
-  if (parts.length >= 2) {
-    return `${parts[0]}.${parts[1]}`;
+  const clean = dateStr.trim();
+  const parts = clean.split(/[.\-\/]/).map(p => p.trim());
+  if (parts.length === 3) {
+    let year = '';
+    let month = '';
+    if (parts[2].length === 4) {
+      year = parts[2];
+      month = parts[0];
+    } else if (parts[0].length === 4) {
+      year = parts[0];
+      month = parts[1];
+    }
+    if (year && month) {
+      const mNum = parseInt(month, 10);
+      if (!isNaN(mNum)) {
+        const paddedMonth = mNum < 10 ? `0${mNum}` : `${mNum}`;
+        return `${year}.${paddedMonth}`;
+      }
+      return `${year}.${month}`;
+    }
+  } else if (parts.length === 2) {
+    if (parts[0].length === 4) {
+      return `${parts[0]}.${parts[1].padStart(2, '0')}`;
+    } else if (parts[1].length === 4) {
+      return `${parts[1]}.${parts[0].padStart(2, '0')}`;
+    }
   }
-  return dateStr;
+  return clean;
 };
 
 interface NewsPageProps {

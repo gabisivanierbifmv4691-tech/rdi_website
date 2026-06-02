@@ -207,21 +207,22 @@ export default function ProjectsPage({ lang }: ProjectsPageProps) {
                       
                       {/* Info on cards - same format as the main hero screen */}
                       <div className="absolute bottom-6 left-6 right-6 text-white z-10 select-none transform transition-all duration-700 group-hover:-translate-y-1.5">
-                        <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.25em] text-white/70 block mb-1">
+                        <p className="text-[10px] md:text-[11px] font-bold tracking-[0.16em] uppercase text-white/80 mb-1.5">
                           {(() => {
                             const tagsStr = lang === 'cn' ? project.tagsCN : project.tagsEN;
                             if (tagsStr) {
-                              const tags = tagsStr.split(/[,，、]/).map(t => t.trim()).filter(Boolean);
-                              if (tags.length > 0) return tags[0];
+                              const tags = tagsStr.split(/[,，、;；]/).map(t => t.trim()).filter(Boolean);
+                              if (tags.length > 0) return lang === 'cn' ? tags[0] : tags[0].toUpperCase();
                             }
-                            return lang === 'cn' ? '项目作品' : 'PROJECT';
+                            return lang === 'cn' ? (project.category || '项目') : (project.category?.toUpperCase() || 'PROJECT');
                           })()}
-                        </span>
+                        </p>
                         <h3 className="text-lg md:text-2xl font-bold tracking-tight text-white mb-1.5 uppercase leading-tight line-clamp-2">
                           {lang === 'cn' ? project.titleCN : project.titleEN}
                         </h3>
                         <p className="text-[10px] md:text-xs font-medium tracking-wide text-white/60 uppercase">
                           {getLocationLabel(project.location, lang, project.locationEN)}
+                          {project.completion && ` • ${project.completion}`}
                         </p>
                       </div>
                     </div>

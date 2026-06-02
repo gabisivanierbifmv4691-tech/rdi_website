@@ -1,7 +1,7 @@
-﻿首屏大图,1,2,3,4,5,,,,,,,,,,
-id,guangzhou-xpeng-hq,shanghai-luyue,hangzhou-baolizhiyexiyuanfu,shanghai-suitangli,midea-science-center,,,,,,,,,,
-,,,,,,,,,,,,,,,
-图片栏,1,2,3,4,5,6,7,8,9,10,11,12,13,14,
-id,chongqing-huigu-hotel,dali-yuntuo-distillery,shanghai-comac-hq,shanghai-suitangli,chengdu-greenland,shanghai-expo-greenhouse,midea-science-center,20240410_mdw,shanghai-psa,20240315_lw,shanghai-nhm,circadian_rhythm,nanchang-zifeng,midea-science-center,
-aspect,aspect-square,aspect-square,aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-square,aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-square,aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],,
-span,md:col-span-2 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-2 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-2,md:col-span-1 md:row-span-2,md:col-span-2 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-2 md:row-span-1,
+﻿首屏大图,1,2,3,4,5,,,,,,,,,,,
+id,guangzhou-xpeng,shanghai-west-bund-museum,hangzhou-baolizhiyexiyuanfu,shanghai-suitangli,nanjing-baiyunting,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+图片栏,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+id,shanghai-jingan-sculpture-park,dali-yuntuo-distillery,shanghai-comac-hq,shanghai-suitangli,beijing-palace-museum-exhibition,shanghai-expo-greenhouse,midea-science-center,20240410_mdw,shanghai-psa,20240315_lw,shanghai-nhm,circadian_rhythm,shanghai-hengfeng-bridge,hk-tai-kwun-exhibition,hangzhou-center,shanghai-yuyuan-mall
+aspect,aspect-square,aspect-square,aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-square,aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-square,aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-square,aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],,,
+span,md:col-span-2 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2

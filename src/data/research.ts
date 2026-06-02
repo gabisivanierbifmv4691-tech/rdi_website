@@ -3,6 +3,8 @@ export interface ResearchItem {
   titleCN: string;
   titleEN: string;
   category: string;
+  categoryCN?: string;
+  categoryEN?: string;
   image: string;
   date?: string;
   url?: string;
@@ -14,6 +16,10 @@ export interface ResearchItem {
   location?: string;
   tagsCN?: string;
   tagsEN?: string;
+  creditsCN?: string;
+  creditsEN?: string;
+  seoMeta?: string;
+  geoEntities?: string;
   blocks?: any[];
 }
 
