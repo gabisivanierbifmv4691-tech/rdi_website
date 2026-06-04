@@ -176,7 +176,7 @@ export default function NewsPage({ lang }: NewsPageProps) {
                   <img 
                     src={`${item.image}?auto=format&fit=crop&q=80&w=1000`}
                     alt={lang === 'cn' ? item.titleCN : item.titleEN}
-                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                    className="w-full h-full object-cover grayscale transition-all duration-1000 ease-out group-hover:scale-105 group-hover:grayscale-0"
                     referrerPolicy="no-referrer"
                   />
                   
