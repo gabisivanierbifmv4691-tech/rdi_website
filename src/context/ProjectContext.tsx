@@ -369,7 +369,34 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
         }
 
         if (parsedProjects.length > 0) {
-          setProjects(parsedProjects);
+          // Sort projects descending by completion date/year stably
+          const projectsWithIndex = parsedProjects.map((p, idx) => ({ p, idx }));
+          projectsWithIndex.sort((x, y) => {
+            const aComp = x.p.completion ? x.p.completion.trim() : '';
+            const bComp = y.p.completion ? y.p.completion.trim() : '';
+
+            const isAInProgress = !aComp || aComp.toLowerCase().includes('progress') || aComp.toLowerCase().includes('construct') || aComp.includes('在建');
+            const isBInProgress = !bComp || bComp.toLowerCase().includes('progress') || bComp.toLowerCase().includes('construct') || bComp.includes('在建');
+
+            if (isAInProgress && !isBInProgress) return -1;
+            if (!isAInProgress && isBInProgress) return 1;
+            if (isAInProgress && isBInProgress) return x.idx - y.idx;
+
+            const parseCompletionToNum = (s: string) => {
+              const match = s.match(/\d+(\.\d+)?/);
+              return match ? parseFloat(match[0]) : 0;
+            };
+
+            const aNum = parseCompletionToNum(aComp);
+            const bNum = parseCompletionToNum(bComp);
+
+            if (bNum !== aNum) {
+              return bNum - aNum;
+            }
+            return x.idx - y.idx; // Stable sorting fallback
+          });
+          const sortedProjects = projectsWithIndex.map(item => item.p);
+          setProjects(sortedProjects);
           setError(null);
         } else {
           setProjects([]);
@@ -551,7 +578,35 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
             blocks
           });
         }
-        setNews(parsedNews.length > 0 ? parsedNews : fallbackNews);
+        const finalNews = parsedNews.length > 0 ? parsedNews : fallbackNews;
+        const newsWithIndex = finalNews.map((n, idx) => ({ n, idx }));
+        newsWithIndex.sort((x, y) => {
+          const parseNewsDate = (dStr: string | undefined): number => {
+            if (!dStr) return 0;
+            const trimmed = dStr.trim();
+            const parts = trimmed.split(/[-./]/).map(Number);
+            if (parts.length >= 2) {
+              const year = parts[0] || 0;
+              const month = parts[1] || 1;
+              const day = parts[2] || 1;
+              return year * 10000 + month * 100 + day;
+            } else if (parts.length === 1) {
+              const year = parts[0] || 0;
+              return year * 10000;
+            }
+            return 0;
+          };
+
+          const aVal = parseNewsDate(x.n.date);
+          const bVal = parseNewsDate(y.n.date);
+
+          if (bVal !== aVal) {
+            return bVal - aVal;
+          }
+          return x.idx - y.idx;
+        });
+        const sortedNews = newsWithIndex.map(item => item.n);
+        setNews(sortedNews);
 
         // Process Research config CSV data
         const sanitizeAspect = (aspectStr: string): string => {
@@ -666,7 +721,52 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
             blocks
           });
         }
-        setResearch(parsedResearch.length > 0 ? parsedResearch : fallbackResearch);
+        const finalResearch = parsedResearch.length > 0 ? parsedResearch : fallbackResearch;
+        const researchWithIndex = finalResearch.map((r, idx) => ({ r, idx }));
+        researchWithIndex.sort((x, y) => {
+          const parseResearchDate = (dStr: string | undefined): number => {
+            if (!dStr) return 0;
+            const trimmed = dStr.trim();
+            // Try parsing using Date.parse
+            const timestamp = Date.parse(trimmed);
+            if (!isNaN(timestamp)) {
+              return timestamp;
+            }
+            const parts = trimmed.split(/[-./]/).map(Number);
+            if (parts.length === 3) {
+              if (parts[0] > 100) {
+                const year = parts[0];
+                const month = parts[1];
+                const day = parts[2];
+                return year * 10000 + month * 100 + day;
+              } else {
+                const year = parts[2] || 0;
+                const part1 = parts[0] || 0;
+                const part2 = parts[1] || 0;
+                return year * 10000 + part1 * 100 + part2;
+              }
+            } else if (parts.length === 2) {
+              if (parts[0] > 100) {
+                return parts[0] * 10000 + parts[1] * 100;
+              } else {
+                return parts[1] * 10000 + parts[0] * 100;
+              }
+            } else if (parts.length === 1) {
+              return parts[0] * 10000;
+            }
+            return 0;
+          };
+
+          const aVal = parseResearchDate(x.r.date);
+          const bVal = parseResearchDate(y.r.date);
+
+          if (bVal !== aVal) {
+            return bVal - aVal;
+          }
+          return x.idx - y.idx;
+        });
+        const sortedResearch = researchWithIndex.map(item => item.r);
+        setResearch(sortedResearch);
 
         setLoading(false);
       } catch (err) {
