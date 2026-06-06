@@ -156,23 +156,59 @@ export default function ResearchPage({ lang }: ResearchPageProps) {
       <div className="px-1 md:px-2 pt-2">
         <motion.div 
           layout
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 auto-rows-min grid-flow-row-dense"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 auto-rows-[250px] md:auto-rows-[300px] grid-flow-row-dense"
         >
           <AnimatePresence mode="popLayout">
-            {filteredItems.map((item) => (
-              <Link 
-                key={item.id} 
-                to={`/research/${item.id}`}
-                className={`${item.aspect || 'aspect-square'} ${item.span || ''}`}
-              >
+            {filteredItems.map((item) => {
+              // Sanitize aspect and span tokens to extract proper layout positioning
+              const aspectClasses = item.aspect || '';
+              const spanClasses = item.span || '';
+              const allTokens = `${spanClasses} ${aspectClasses}`.split(/\s+/);
+              
+              const filteredTokens = allTokens.filter(token => {
+                const t = token.trim().toLowerCase();
+                if (!t) return false;
+                // Exclude raw numerical ratios or helper height classes
+                if (t === '3:4' || t === '16:9' || t === '1:1' || t.startsWith('aspect-') || t.startsWith('h-') || t.startsWith('min-h-') || t.startsWith('max-h-')) {
+                  return false;
+                }
+                return true;
+              });
+
+              // Construct proper grid areas
+              let finalGridArea = filteredTokens.join(' ').trim();
+              if (!finalGridArea.includes('col-span')) {
+                finalGridArea += ' col-span-1';
+              }
+              if (!finalGridArea.includes('row-span')) {
+                finalGridArea += ' row-span-1';
+              }
+
+              // Keep a dummy definition of all possible Tailwind classes so that they are guaranteed to be compiled
+              const _safelist = [
+                'col-span-1', 'col-span-2', 'col-span-3',
+                'row-span-1', 'row-span-2', 'row-span-3',
+                'md:col-span-1', 'md:col-span-2', 'md:col-span-3',
+                'md:row-span-1', 'md:row-span-2', 'md:row-span-3',
+                'lg:col-span-1', 'lg:col-span-2', 'lg:col-span-3',
+                'lg:row-span-1', 'lg:row-span-2', 'lg:row-span-3'
+              ];
+
+              return (
                 <motion.div
+                  key={item.id}
                   layout
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                  className="group relative overflow-hidden bg-gray-50 h-full w-full"
+                  className={finalGridArea}
                 >
+                  <Link 
+                    to={`/research/${item.id}`}
+                    className="block w-full h-full"
+                  >
+                    <div className="group relative overflow-hidden bg-gray-50 h-full w-full">
                   <img 
                     src={`${item.image}?auto=format&fit=crop&q=80&w=1000`}
                     alt={lang === 'cn' ? item.titleCN : item.titleEN}
@@ -201,9 +237,11 @@ export default function ResearchPage({ lang }: ResearchPageProps) {
                       </span>
                     </div>
                   </div>
+                    </div>
+                  </Link>
                 </motion.div>
-              </Link>
-            ))}
+              );
+            })}
           </AnimatePresence>
         </motion.div>
       </div>
