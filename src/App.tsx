@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { ProjectProvider } from './context/ProjectContext';
 import Header from './components/Header';
+import LandingIntro from './components/LandingIntro';
 import Hero from './components/Hero';
 import ProjectGrid from './components/ProjectGrid';
 import ProjectsPage from './components/ProjectsPage';
@@ -37,6 +38,17 @@ function ScrollToTop() {
 
 export default function App() {
   const [lang, setLang] = useState<Language>('cn');
+  const [showIntro, setShowIntro] = useState(() => {
+    const href = window.location.href;
+    const forceIntro = href.includes('intro=true');
+    if (forceIntro) {
+      sessionStorage.removeItem('rdi_intro_played');
+      return true;
+    }
+    const isHome = window.location.hash === '' || window.location.hash === '#/' || window.location.pathname === '/';
+    const hasPlayed = sessionStorage.getItem('rdi_intro_played');
+    return isHome && !hasPlayed;
+  });
 
   const toggleLang = () => setLang(prev => (prev === 'en' ? 'cn' : 'en'));
 
@@ -45,7 +57,15 @@ export default function App() {
       <Router>
         <ScrollToTop />
         <div className="flex flex-col min-h-screen">
-          <Header lang={lang} onToggleLang={toggleLang} />
+          <Header lang={lang} onToggleLang={toggleLang} showIntro={showIntro} />
+          {showIntro && (
+            <LandingIntro
+              onComplete={() => {
+                setShowIntro(false);
+                sessionStorage.setItem('rdi_intro_played', 'true');
+              }}
+            />
+          )}
           <main className="flex-grow">
             <Routes>
               <Route path="/" element={

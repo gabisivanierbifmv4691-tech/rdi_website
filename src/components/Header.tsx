@@ -18,9 +18,10 @@ import {
 interface HeaderProps {
   lang: Language;
   onToggleLang: () => void;
+  showIntro?: boolean;
 }
 
-export default function Header({ lang, onToggleLang }: HeaderProps) {
+export default function Header({ lang, onToggleLang, showIntro = false }: HeaderProps) {
   const { homeConfig, projects = [], news = [], research = [] } = useProjects();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -228,11 +229,13 @@ export default function Header({ lang, onToggleLang }: HeaderProps) {
         <div className="w-full max-w-[1280px] flex justify-between items-center">
           <div className="flex items-center gap-2">
               <div 
+                id="header-logo-container"
                 ref={logoRef}
                 onClick={(e) => handleLogoClick(e, logoRef, false)}
                 onMouseEnter={() => setIsLogoHovered(true)}
                 onMouseLeave={() => setIsLogoHovered(false)}
                 className="relative flex items-center cursor-pointer group"
+                style={{ opacity: showIntro ? 0 : 1, transition: 'opacity 0.4s ease' }}
               >
                 <div className="relative">
                   <img 
