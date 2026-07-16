@@ -52,7 +52,7 @@ export default function Footer({ lang }: FooterProps) {
           { name: 'PRIVACY POLICY', link: '/privacy' },
           { name: 'IMPRINT', link: '/imprint' },
         ],
-    copy: lang === 'cn' ? '© 2026 RDI瑞照明国际照明设计. 版权所有.' : '© 2026 RDESIGN INTERNATIONAL LIGHTING. ALL RIGHTS RESERVED.',
+    copy: lang === 'cn' ? '© 2026 RDI瑞照明国际照明设计. 版权所有. 沪ICP备12028265号-1.' : '© 2026 RDESIGN INTERNATIONAL LIGHTING. ALL RIGHTS RESERVED.',
   };
 
   const getSocialLinkProps = (key: string) => {
@@ -64,7 +64,7 @@ export default function Footer({ lang }: FooterProps) {
   };
 
   return (
-    <footer className="bg-[#111111] text-white py-20 px-8">
+    <footer className="bg-[#111111] text-white py-20 px-6 md:px-12">
       <div className="max-w-[1280px] mx-auto flex flex-col items-center gap-12 text-center">
         <h2 className="text-[23px] md:text-[27px] font-light tracking-[0.2em] uppercase max-w-4xl w-full px-4">
           {content.company}

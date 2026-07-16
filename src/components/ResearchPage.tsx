@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import type { Language } from '../App';
 import { useProjects } from '../context/ProjectContext';
 import { ChevronDown } from 'lucide-react';
+import LazyImage from './LazyImage';
+import InfiniteScrollObserver from './InfiniteScrollObserver';
 
 const formatYearMonth = (dateStr: string) => {
   if (!dateStr) return '';
@@ -45,6 +47,7 @@ export default function ResearchPage({ lang }: ResearchPageProps) {
   const { research } = useProjects();
   const [activeFilters, setActiveFilters] = useState<string[]>(['ALL']);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(9);
 
   const t = {
     title: lang === 'cn' ? '研究与实验' : 'RESEARCH',
@@ -65,6 +68,7 @@ export default function ResearchPage({ lang }: ResearchPageProps) {
   }, [research, lang]);
 
   const toggleFilter = (cat: string) => {
+    setVisibleCount(9);
     if (cat === 'ALL') {
       setActiveFilters(['ALL']);
     } else {
@@ -159,7 +163,7 @@ export default function ResearchPage({ lang }: ResearchPageProps) {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 auto-rows-[250px] md:auto-rows-[300px] grid-flow-row-dense"
         >
           <AnimatePresence mode="popLayout">
-            {filteredItems.map((item) => {
+            {filteredItems.slice(0, visibleCount).map((item) => {
               // Sanitize aspect and span tokens to extract proper layout positioning
               const aspectClasses = item.aspect || '';
               const spanClasses = item.span || '';
@@ -209,34 +213,34 @@ export default function ResearchPage({ lang }: ResearchPageProps) {
                     className="block w-full h-full"
                   >
                     <div className="group relative overflow-hidden bg-gray-50 h-full w-full">
-                  <img 
-                    src={`${item.image}?auto=format&fit=crop&q=80&w=1000`}
-                    alt={lang === 'cn' ? item.titleCN : item.titleEN}
-                    className="w-full h-full object-cover grayscale transition-all duration-1000 group-hover:scale-105 group-hover:grayscale-0"
-                    referrerPolicy="no-referrer"
-                  />
-                  
-                  {/* Elegant dark gradient overlay for steady readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/15 transition-opacity duration-500 group-hover:from-black/90 group-hover:via-black/50" />
-                  
-                  {/* Floating Content formatted exactly like Hero style */}
-                  <div className="absolute bottom-6 left-6 right-6 text-white z-10 transition-transform duration-500 group-hover:translate-y-[-4px]">
-                    {/* Category Label - bilingual */}
-                    <p className="text-[10px] md:text-[11px] font-bold tracking-[0.16em] uppercase text-white/80 mb-1.5 animate-fade-in">
-                      {lang === 'cn' ? (item.categoryCN || '学术研究') : (item.categoryEN || 'Academic Research')}
-                    </p>
-                    {/* Title */}
-                    <h3 className="text-sm md:text-base lg:text-[17px] font-semibold tracking-tight leading-snug mb-1.5 line-clamp-2">
-                      {lang === 'cn' ? item.titleCN : item.titleEN}
-                    </h3>
-                    
-                    {/* Date only, no divider line or tag */}
-                    <div className="flex items-center">
-                      <span className="text-[10px] md:text-[11px] font-light opacity-80">
-                        {formatYearMonth(item.date || '2026.05.01')}
-                      </span>
-                    </div>
-                  </div>
+                      <LazyImage 
+                        src={`${item.image}?auto=format&fit=crop&q=80&w=1000`}
+                        alt={lang === 'cn' ? item.titleCN : item.titleEN}
+                        className="w-full h-full object-cover grayscale transition-all duration-1000 group-hover:scale-105 group-hover:grayscale-0"
+                        referrerPolicy="no-referrer"
+                      />
+                      
+                      {/* Elegant dark gradient overlay for steady readability */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/15 transition-opacity duration-500 group-hover:from-black/90 group-hover:via-black/50" />
+                      
+                      {/* Floating Content formatted exactly like Hero style */}
+                      <div className="absolute bottom-6 left-6 right-6 text-white z-10 transition-transform duration-500 group-hover:translate-y-[-4px]">
+                        {/* Category Label - bilingual */}
+                        <p className="text-[10px] md:text-[11px] font-bold tracking-[0.16em] uppercase text-white/80 mb-1.5 animate-fade-in">
+                          {lang === 'cn' ? (item.categoryCN || '学术研究') : (item.categoryEN || 'Academic Research')}
+                        </p>
+                        {/* Title */}
+                        <h3 className="text-sm md:text-base lg:text-[17px] font-semibold tracking-tight leading-snug mb-1.5 line-clamp-2">
+                          {lang === 'cn' ? item.titleCN : item.titleEN}
+                        </h3>
+                        
+                        {/* Date only, no divider line or tag */}
+                        <div className="flex items-center">
+                          <span className="text-[10px] md:text-[11px] font-light opacity-80">
+                            {formatYearMonth(item.date || '2026.05.01')}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </Link>
                 </motion.div>
@@ -244,6 +248,12 @@ export default function ResearchPage({ lang }: ResearchPageProps) {
             })}
           </AnimatePresence>
         </motion.div>
+
+        <InfiniteScrollObserver
+          onLoadMore={() => setVisibleCount((prev) => prev + 9)}
+          hasMore={filteredItems.length > visibleCount}
+          lang={lang}
+        />
       </div>
     </div>
   );

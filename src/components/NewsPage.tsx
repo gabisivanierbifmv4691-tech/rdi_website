@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import type { Language } from '../App';
 import { useProjects } from '../context/ProjectContext';
 import { ChevronDown } from 'lucide-react';
+import LazyImage from './LazyImage';
+import InfiniteScrollObserver from './InfiniteScrollObserver';
 
 const formatYearMonth = (dateStr: string) => {
   if (!dateStr) return '';
@@ -45,6 +47,7 @@ export default function NewsPage({ lang }: NewsPageProps) {
   const { news } = useProjects();
   const [activeFilters, setActiveFilters] = useState<string[]>(['ALL']);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(9);
 
   const t = {
     title: lang === 'cn' ? '新闻动态' : 'NEWS',
@@ -65,6 +68,7 @@ export default function NewsPage({ lang }: NewsPageProps) {
   }, [news, lang]);
 
   const toggleFilter = (cat: string) => {
+    setVisibleCount(9);
     if (cat === 'ALL') {
       setActiveFilters(['ALL']);
     } else {
@@ -159,7 +163,7 @@ export default function NewsPage({ lang }: NewsPageProps) {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 auto-rows-[250px] md:auto-rows-[300px] grid-flow-row-dense"
         >
           <AnimatePresence mode="popLayout">
-            {filteredItems.map((item) => {
+            {filteredItems.slice(0, visibleCount).map((item) => {
               // Sanitize aspect and span tokens to extract proper layout positioning
               const aspectClasses = item.aspect || '';
               const spanClasses = item.span || '';
@@ -209,7 +213,7 @@ export default function NewsPage({ lang }: NewsPageProps) {
                     className="block w-full h-full"
                   >
                     <div className="group relative overflow-hidden bg-gray-50 h-full w-full">
-                      <img 
+                      <LazyImage 
                         src={`${item.image}?auto=format&fit=crop&q=80&w=1000`}
                         alt={lang === 'cn' ? item.titleCN : item.titleEN}
                         className="w-full h-full object-cover grayscale transition-all duration-1000 ease-out group-hover:scale-105 group-hover:grayscale-0"
@@ -249,6 +253,12 @@ export default function NewsPage({ lang }: NewsPageProps) {
             })}
           </AnimatePresence>
         </motion.div>
+
+        <InfiniteScrollObserver
+          onLoadMore={() => setVisibleCount((prev) => prev + 9)}
+          hasMore={filteredItems.length > visibleCount}
+          lang={lang}
+        />
       </div>
     </div>
   );

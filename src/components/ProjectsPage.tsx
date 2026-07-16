@@ -5,6 +5,8 @@ import type { Language } from '../App';
 import { ChevronDown } from 'lucide-react';
 import { useProjects } from '../context/ProjectContext';
 import { getLocationLabel } from '../utils/projectHelpers';
+import LazyImage from './LazyImage';
+import InfiniteScrollObserver from './InfiniteScrollObserver';
 
 interface ProjectsPageProps {
   lang: Language;
@@ -14,6 +16,7 @@ export default function ProjectsPage({ lang }: ProjectsPageProps) {
   const { projects, loading } = useProjects();
   const [activeFilters, setActiveFilters] = useState<string[]>(['ALL']);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(9);
 
   const t = {
     title: lang === 'cn' ? '项目作品' : 'PROJECTS',
@@ -34,6 +37,7 @@ export default function ProjectsPage({ lang }: ProjectsPageProps) {
   }, [projects, lang]);
 
   const toggleFilter = (cat: string) => {
+    setVisibleCount(9);
     if (cat === 'ALL') {
       setActiveFilters(['ALL']);
     } else {
@@ -144,7 +148,7 @@ export default function ProjectsPage({ lang }: ProjectsPageProps) {
           className="grid grid-cols-1 md:grid-cols-3 gap-2 auto-rows-[250px] md:auto-rows-[300px] grid-flow-row-dense"
         >
           <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project) => {
+            {filteredProjects.slice(0, visibleCount).map((project) => {
               // Sanitize classes: filter out height and aspect ratio classes
               const aspectClasses = project.aspect || '';
               const spanClasses = project.span || '';
@@ -194,7 +198,7 @@ export default function ProjectsPage({ lang }: ProjectsPageProps) {
                           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                         />
                       ) : (
-                        <img 
+                        <LazyImage 
                           src={project.image.includes('unsplash.com') ? `${project.image}?auto=format&fit=crop&q=80&w=1200` : project.image}
                           alt={lang === 'cn' ? project.titleCN : project.titleEN}
                           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
@@ -232,6 +236,12 @@ export default function ProjectsPage({ lang }: ProjectsPageProps) {
             })}
           </AnimatePresence>
         </motion.div>
+
+        <InfiniteScrollObserver
+          onLoadMore={() => setVisibleCount((prev) => prev + 9)}
+          hasMore={filteredProjects.length > visibleCount}
+          lang={lang}
+        />
       </div>
     </div>
   );

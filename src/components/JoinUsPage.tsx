@@ -1,15 +1,11 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import type { Language } from '../App';
-import { Mail, MapPin, Briefcase, ChevronDown, Award } from 'lucide-react';
 
 interface JoinUsPageProps {
   lang: Language;
 }
 
 export default function JoinUsPage({ lang }: JoinUsPageProps) {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
-
   const t = {
     heroTitle: lang === 'cn' ? '招聘！虚位以待 共筑梦想' : 'JOIN THE TEAM | EMPOWERING VISION',
     heroIntro1: lang === 'cn'
@@ -24,7 +20,7 @@ export default function JoinUsPage({ lang }: JoinUsPageProps) {
     szName: lang === 'cn' ? '深圳分部 Shenzhen Branch' : 'Shenzhen Branch',
     szAddress: lang === 'cn' ? '深圳市福田区NEO绿景广场B栋29层B号' : 'Unit B, 29th Floor, Block B, NEO Green Plaza, Futian District, Shenzhen',
     benefitsTitle: lang === 'cn' ? '员工福利待遇 / BENEFIT & CULTURE' : 'OUR BENEFIT PACKAGE',
-    positionsTitle: lang === 'cn' ? '当前开放职位 / OPEN POSITIONS' : 'CURRENT OPENINGS',
+    positionsTitle: lang === 'cn' ? '开放职位 / OPEN POSITIONS' : 'CURRENT OPENINGS',
     applyInstructions: lang === 'cn'
       ? '请将您的简历及附加作品集（方案）发送至下方招聘专属邮箱枢纽，并注明【姓名 - 申请职位】。期待与您在光影长廊相遇。'
       : 'Please send your CV and portfolio, formatted with your application name, to our recruitment email listed below. We look forward to meeting you inside the gallery.',
@@ -203,186 +199,91 @@ export default function JoinUsPage({ lang }: JoinUsPageProps) {
   ];
 
   return (
-    <div className="bg-white min-h-screen pt-32 pb-24">
-      <div className="max-w-[1280px] mx-auto px-6 md:px-12">
+    <div className="bg-white min-h-screen pt-32 pb-24 px-6 md:px-12 flex justify-center">
+      <div className="w-full max-w-[1280px]">
         
         {/* Editorial Greeting Header */}
-        <section className="py-12 border-b border-black mb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-baseline">
-            <h1 className="lg:col-span-6 text-3xl md:text-5xl font-bold tracking-tight text-black uppercase leading-tight select-none">
-              {t.heroTitle}
-            </h1>
-            <div className="lg:col-span-6 space-y-4">
-              <p className="text-sm text-neutral-800 leading-relaxed font-light">
-                {t.heroIntro1}
-              </p>
-              <p className="text-sm text-neutral-600 leading-relaxed font-light">
-                {t.heroIntro2}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Office Hub Locations Grid */}
         <section className="mb-20">
-          <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.25em] block mb-6 font-mono">
-            {t.hubsTitle}
-          </span>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-            <div className="p-8 border border-neutral-150 relative overflow-hidden bg-neutral-50/50 hover:bg-neutral-50 duration-300">
-              <div className="flex gap-3 items-center mb-4">
-                <MapPin size={18} className="text-neutral-800" />
-                <h3 className="font-bold text-sm tracking-widest text-black uppercase">{t.shName}</h3>
-              </div>
-              <p className="text-xs text-neutral-600 leading-relaxed font-light">{t.shAddress}</p>
-              <span className="absolute bottom-3 right-6 text-[10px] text-neutral-200 uppercase font-mono font-bold select-none">[ CN_SH_HQ ]</span>
-            </div>
-
-            <div className="p-8 border border-neutral-150 relative overflow-hidden bg-neutral-50/50 hover:bg-neutral-50 duration-300">
-              <div className="flex gap-3 items-center mb-4">
-                <MapPin size={18} className="text-neutral-800" />
-                <h3 className="font-bold text-sm tracking-widest text-black uppercase">{t.szName}</h3>
-              </div>
-              <p className="text-xs text-neutral-600 leading-relaxed font-light">{t.szAddress}</p>
-              <span className="absolute bottom-3 right-6 text-[10px] text-neutral-200 uppercase font-mono font-bold select-none">[ CN_SZ_BR ]</span>
-            </div>
-          </div>
-        </section>
-
-        {/* Customized Benefits Section */}
-        <section className="mb-24 py-16 px-8 bg-neutral-900 text-white relative overflow-hidden">
-          {/* Ambient lighting flare overlay */}
-          <div className="absolute inset-0 pointer-events-none opacity-20" style={{
-            background: 'radial-gradient(circle at 10% 20%, rgba(217,119,6,0.15) 0%, rgba(0,0,0,0) 60%)'
-          }} />
-          
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-5">
-              <div className="flex gap-2 items-center text-amber-500 mb-3">
-                <Award size={16} />
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] font-mono">INSIDE RDI</span>
-              </div>
-              <h2 className="text-2xl md:text-3xl font-light tracking-widest text-white uppercase leading-snug">
-                {lang === 'cn' ? (
-                  <>
-                    关怀备至<br />
-                    <span>携手逐梦光影</span>
-                  </>
-                ) : (
-                  <>
-                    GROWING IN<br />
-                    <span>BRILLIANT WALKS</span>
-                  </>
-                )}
-              </h2>
-              <p className="text-xs text-neutral-400 mt-4 leading-relaxed font-light max-w-sm">
-                {lang === 'cn' 
-                  ? '我们深知，最伟大的照明方案皆孕育于最自由和自洽的灵魂中。为此，RDI提供最宽宏暖心的安全屏障：'
-                  : 'We firmly believe that the most marvelous architectural illumination concepts derive from autonomous and free souls. We host precise safeguards:'}
-              </p>
-            </div>
-            
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
-              {benefits.map((benefit, i) => (
-                <div key={i} className="flex gap-3 items-start pb-3 border-b border-white/5">
-                  <span className="text-[9px] font-mono text-amber-500 mt-0.5">{(i + 1).toString().padStart(2, '0')}.</span>
-                  <p className="text-xs text-neutral-200 font-light leading-relaxed">{benefit}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-3xl md:text-4xl font-bold tracking-tight mb-8 text-black uppercase"
+          >
+            {t.heroTitle}
+          </motion.h1>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="space-y-6 text-xl md:text-2xl text-black leading-relaxed font-light"
+          >
+            <p>{t.heroIntro1}</p>
+            <p>{t.heroIntro2}</p>
+          </motion.div>
         </section>
 
         {/* Positions Open Panel Accordion */}
-        <section className="mb-24">
-          <div className="border-b border-black pb-4 mb-8 flex justify-between items-baseline">
-            <h2 className="text-sm font-bold text-black tracking-widest uppercase">
-              {t.positionsTitle}
-            </h2>
-            <span className="text-[10px] font-mono text-neutral-400">COUNT: 05 GLOBAL OPENINGS</span>
-          </div>
+        <section className="mb-20">
+          <h2 className="text-xl md:text-2xl font-bold mb-6 uppercase tracking-wider text-black">
+            {t.positionsTitle}
+          </h2>
 
           <div className="border-t border-neutral-200/60">
-            {positions.map((pos, idx) => {
-              const isOpen = openIndex === idx;
+            {positions.map((pos) => {
               return (
                 <div 
                   key={pos.id} 
-                  className="border-b border-neutral-200/60 transition-colors duration-300"
+                  className="border-b border-neutral-200/60 py-8 space-y-6"
                 >
-                  {/* Accordion Trigger header button */}
-                  <button
-                    onClick={() => setOpenIndex(isOpen ? null : idx)}
-                    className="w-full py-8 text-left flex justify-between items-start gap-6 hover:bg-neutral-50/50 px-4 transition-colors cursor-pointer"
-                  >
-                    <div className="space-y-2">
-                      <h3 className="text-lg md:text-xl font-bold tracking-tight text-neutral-900 uppercase">
-                        {lang === 'cn' ? pos.titleCN : pos.titleEN}
-                      </h3>
-                      <div className="flex gap-6 items-center text-xs text-neutral-500 font-light">
-                        <span className="flex gap-1.5 items-center">
-                          <MapPin size={12} className="text-neutral-400" />
-                          {lang === 'cn' ? pos.locCN : pos.locEN}
-                        </span>
-                        <span className="font-mono text-[10px] text-neutral-300">|</span>
-                        <span className="flex gap-1.5 items-center">
-                          <Briefcase size={12} className="text-neutral-400" />
-                          {lang === 'cn' ? '全职 / 招募' : 'Full-time'}
-                        </span>
-                      </div>
+                  {/* Position Header (Non-clickable block) */}
+                  <div className="space-y-2">
+                    <h3 className="text-lg md:text-xl font-bold tracking-tight text-black uppercase">
+                      {lang === 'cn' ? pos.titleCN : pos.titleEN}
+                    </h3>
+                    <div className="flex gap-4 items-center text-xs text-black font-light">
+                      <span>
+                        {lang === 'cn' ? pos.locCN : pos.locEN}
+                      </span>
+                      <span className="font-mono text-[10px] text-black">|</span>
+                      <span>
+                        {lang === 'cn' ? '全职 / 招募' : 'Full-time'}
+                      </span>
                     </div>
+                  </div>
+
+                  {/* Position details (always expanded) */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4 border-t border-neutral-100/60">
                     
-                    <span className={`p-2 border border-neutral-200 rounded-full text-neutral-600 transition-transform duration-500 bg-white ${isOpen ? 'rotate-180 bg-neutral-900 border-neutral-900 text-white' : ''}`}>
-                      <ChevronDown size={14} />
-                    </span>
-                  </button>
+                    {/* Duties column */}
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-black mb-2">
+                        {t.responsibilities}
+                      </h4>
+                      <ul className="space-y-2">
+                        {(lang === 'cn' ? pos.dutiesCN : pos.dutiesEN).map((duty, docId) => (
+                          <li key={docId} className="text-base text-black font-light leading-relaxed">
+                            {duty}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
 
-                  {/* Accordion content body */}
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                        className="overflow-hidden"
-                      >
-                        <div className="pb-12 px-6 md:px-10 grid grid-cols-1 lg:grid-cols-2 gap-12 border-t border-neutral-100 pt-8 bg-neutral-50/40">
-                          
-                          {/* Duties column */}
-                          <div className="space-y-4">
-                            <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-800 border-l-2 border-black pl-3 mb-2">
-                              {t.responsibilities}
-                            </h4>
-                            <ul className="space-y-3.5">
-                              {(lang === 'cn' ? pos.dutiesCN : pos.dutiesEN).map((duty, docId) => (
-                                <li key={docId} className="text-xs text-neutral-600 font-light leading-relaxed flex gap-3">
-                                  <span className="text-neutral-400 shrink-0 select-none">—</span>
-                                  <span>{duty}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
+                    {/* Reqs column */}
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-black mb-2">
+                        {t.requirements}
+                      </h4>
+                      <ul className="space-y-2">
+                        {(lang === 'cn' ? pos.reqsCN : pos.reqsEN).map((req, reqId) => (
+                          <li key={reqId} className="text-base text-black font-light leading-relaxed">
+                            {req}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
 
-                          {/* Reqs column */}
-                          <div className="space-y-4">
-                            <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-800 border-l-2 border-amber-600 pl-3 mb-2">
-                              {t.requirements}
-                            </h4>
-                            <ul className="space-y-3.5">
-                              {(lang === 'cn' ? pos.reqsCN : pos.reqsEN).map((req, reqId) => (
-                                <li key={reqId} className="text-xs text-neutral-600 font-light leading-relaxed flex gap-3">
-                                  <span className="text-amber-600/55 shrink-0 select-none">▪</span>
-                                  <span>{req}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  </div>
                 </div>
               );
             })}
@@ -390,21 +291,19 @@ export default function JoinUsPage({ lang }: JoinUsPageProps) {
         </section>
 
         {/* Application Submit Call-To-Action form */}
-        <section className="bg-neutral-50 px-8 py-16 border border-neutral-150 flex flex-col items-center text-center">
-          <Mail size={32} className="text-neutral-800 mb-6" />
-          <h3 className="text-xl font-bold text-black tracking-widest uppercase mb-4">
+        <section className="bg-neutral-50 px-8 py-16 flex flex-col items-center text-center rounded-sm">
+          <h3 className="text-xl md:text-2xl font-bold text-black tracking-widest uppercase mb-3">
             {lang === 'cn' ? '申请渠道' : 'HOW TO APPLY'}
           </h3>
-          <p className="text-xs text-neutral-500 leading-relaxed font-light max-w-2xl mb-8">
+          <p className="text-base md:text-lg text-black leading-relaxed font-light max-w-2xl mb-8">
             {t.applyInstructions}
           </p>
           
           <a 
             href="mailto:qwang@rdilighting.com"
-            className="group px-8 py-4 bg-black text-white hover:bg-neutral-800 transition-colors uppercase font-mono tracking-widest text-xs font-bold flex gap-3 items-center select-all cursor-pointer"
+            className="px-8 py-3.5 bg-neutral-200 text-black hover:bg-neutral-300 transition-colors uppercase font-mono tracking-widest text-xs font-bold flex items-center select-all cursor-pointer rounded-sm"
           >
             <span>qwang@rdilighting.com</span>
-            <span className="text-amber-500 transform group-hover:translate-x-1 duration-300">→</span>
           </a>
         </section>
 
