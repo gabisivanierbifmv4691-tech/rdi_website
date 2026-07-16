@@ -55,6 +55,14 @@ export default function Footer({ lang }: FooterProps) {
     copy: lang === 'cn' ? '© 2026 RDI瑞照明国际照明设计. 版权所有.' : '© 2026 RDESIGN INTERNATIONAL LIGHTING. ALL RIGHTS RESERVED.',
   };
 
+  const getSocialLinkProps = (key: string) => {
+    const href = homeConfig?.socialLinks?.[key] || '#';
+    if (href === '#') {
+      return { href, onClick: (e: React.MouseEvent) => e.preventDefault() };
+    }
+    return { href, target: "_blank", rel: "noopener noreferrer" };
+  };
+
   return (
     <footer className="bg-[#111111] text-white py-20 px-8">
       <div className="max-w-[1280px] mx-auto flex flex-col items-center gap-12 text-center">
@@ -77,14 +85,14 @@ export default function Footer({ lang }: FooterProps) {
         </div>
 
         <div className="flex gap-6 text-white/30">
-          <a href="#" className="hover:text-white transition-colors">{getSocialIcon('wechat', WeChatIcon)}</a>
-          <a href="#" className="hover:text-white transition-colors">{getSocialIcon('tiktok', TikTokIcon)}</a>
-          <a href="#" className="hover:text-white transition-colors">{getSocialIcon('rednote', XiaohongshuIcon)}</a>
-          <a href="#" className="hover:text-white transition-colors">{getSocialIcon('bilibili', BilibiliIcon)}</a>
-          <a href="#" className="hover:text-white transition-colors">{getSocialIcon('instagram', InstagramIcon)}</a>
-          <a href="#" className="hover:text-white transition-colors">{getSocialIcon('facebook', FacebookIcon)}</a>
-          <a href="#" className="hover:text-white transition-colors">{getSocialIcon('linkedin', LinkedinIcon)}</a>
-          <a href="#" className="hover:text-white transition-colors">{getSocialIcon('youtube', YoutubeIcon)}</a>
+          <a {...getSocialLinkProps('wechat')} className="hover:text-white transition-colors">{getSocialIcon('wechat', WeChatIcon)}</a>
+          <a {...getSocialLinkProps('tiktok')} className="hover:text-white transition-colors">{getSocialIcon('tiktok', TikTokIcon)}</a>
+          <a {...getSocialLinkProps('rednote')} className="hover:text-white transition-colors">{getSocialIcon('rednote', XiaohongshuIcon)}</a>
+          <a {...getSocialLinkProps('bilibili')} className="hover:text-white transition-colors">{getSocialIcon('bilibili', BilibiliIcon)}</a>
+          <a {...getSocialLinkProps('instagram')} className="hover:text-white transition-colors">{getSocialIcon('instagram', InstagramIcon)}</a>
+          <a {...getSocialLinkProps('facebook')} className="hover:text-white transition-colors">{getSocialIcon('facebook', FacebookIcon)}</a>
+          <a {...getSocialLinkProps('linkedin')} className="hover:text-white transition-colors">{getSocialIcon('linkedin', LinkedinIcon)}</a>
+          <a {...getSocialLinkProps('youtube')} className="hover:text-white transition-colors">{getSocialIcon('youtube', YoutubeIcon)}</a>
         </div>
         
         <div className="text-[11px] uppercase tracking-[0.4em] text-white/20 mt-8">

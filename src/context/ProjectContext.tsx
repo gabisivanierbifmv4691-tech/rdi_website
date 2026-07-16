@@ -17,6 +17,7 @@ export interface HomeConfig {
     about: string;
   };
   icons?: Record<string, string>;
+  socialLinks?: Record<string, string>;
 }
 
 interface ProjectContextType {
@@ -481,6 +482,41 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
           if (valRow[4]) hiddenMenu.about = valRow[4].trim();
         }
 
+        const socialLinks: Record<string, string> = {
+          wechat: 'https://mp.weixin.qq.com/s/Tg8XEk4XtzZrwuZLsJwzTw',
+          rednote: 'https://www.xiaohongshu.com/user/profile/61f688c90000000010004a51?xsec_token=ABnkNVG6YtgP1KAX3iDhl7XnJoxkbGjFn2HNztL1bVlwA=&xsec_source=pc_note&tab=note&subTab=note',
+          instagram: 'https://www.instagram.com/rdilighting?igsh=dTM4dDZjcmZ1MTdi&utm_source=ig_contact_invite',
+          facebook: 'https://www.facebook.com/share/1H3K9JGPHe/?mibextid=wwXIfr',
+          linkedin: 'https://www.linkedin.com/company/rdilighting/',
+          tiktok: '#',
+          bilibili: '#',
+          youtube: '#',
+          zhihu: 'https://www.zhihu.com/people/rdilighting',
+          x: 'https://x.com/rdi_mkt',
+          toutiao: 'https://www.toutiao.com/c/user/token/MS4wLjABAAAAjvj1_Mik8pBKs0OWDDw1fguiD5Bj3HyWhUqRvcUgnO3EKq5PrumoaE7RWhwZk1K8/?source=tuwen_detail&entrance_gid=7652642501077041704&log_from=a3995241fff8d8_1782019314934',
+          sina: 'https://m.weibo.cn/u/6502265335?wm=3333_2001&from=10G6293010&sourcetype=weixin&s_trans=UE8qZ222HFcNSQkJBTQi4w%3D%3D__s&s_channel=4',
+          sohu: 'https://mp.sohu.com/profile?xpt=ZDM4NWYyMjUtZWM5NC00NDg2LTkxZDUtN2Y0ZGRkZTZlZWNm&spm=smpc.content.author.1.1782018926108Dm9Gzgh'
+        };
+
+        const knownPlatforms = [
+          'wechat', 'tiktok', 'rednote', 'bilibili', 'instagram', 
+          'facebook', 'linkedin', 'youtube', 'zhihu', 'x', 
+          'toutiao', 'sina', 'sohu'
+        ];
+
+        for (let i = 0; i < rawHomeRows.length; i++) {
+          const row = rawHomeRows[i];
+          if (row && row.length >= 2) {
+            const cell0 = row[0] ? row[0].trim().toLowerCase() : '';
+            if (knownPlatforms.includes(cell0)) {
+              const url = row[1] ? row[1].trim() : '';
+              if (url) {
+                socialLinks[cell0] = url;
+              }
+            }
+          }
+        }
+
         if (iconsHeaderIndex !== -1 && rawHomeRows[iconsHeaderIndex] && rawHomeRows[iconsHeaderIndex + 1]) {
           const headerRow = rawHomeRows[iconsHeaderIndex];
           const valRow = rawHomeRows[iconsHeaderIndex + 1];
@@ -497,7 +533,8 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
           heroSlides,
           gridItems,
           hiddenMenu,
-          icons
+          icons,
+          socialLinks
         });
 
         // Process News config CSV data
@@ -800,6 +837,21 @@ export function ProjectProvider({ children }: ProjectProviderProps) {
               wechat: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_wechat.svg',
               linkedin: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_linkedin.svg',
               youtube: 'https://rdilighting.oss-cn-hongkong.aliyuncs.com/public/rdi_youtube.svg'
+            },
+            socialLinks: {
+              wechat: 'https://mp.weixin.qq.com/s/Tg8XEk4XtzZrwuZLsJwzTw',
+              rednote: 'https://www.xiaohongshu.com/user/profile/61f688c90000000010004a51?xsec_token=ABnkNVG6YtgP1KAX3iDhl7XnJoxkbGjFn2HNztL1bVlwA=&xsec_source=pc_note&tab=note&subTab=note',
+              instagram: 'https://www.instagram.com/rdilighting?igsh=dTM4dDZjcmZ1MTdi&utm_source=ig_contact_invite',
+              facebook: 'https://www.facebook.com/share/1H3K9JGPHe/?mibextid=wwXIfr',
+              linkedin: 'https://www.linkedin.com/company/rdilighting/',
+              tiktok: '#',
+              bilibili: '#',
+              youtube: '#',
+              zhihu: 'https://www.zhihu.com/people/rdilighting',
+              x: 'https://x.com/rdi_mkt',
+              toutiao: 'https://www.toutiao.com/c/user/token/MS4wLjABAAAAjvj1_Mik8pBKs0OWDDw1fguiD5Bj3HyWhUqRvcUgnO3EKq5PrumoaE7RWhwZk1K8/?source=tuwen_detail&entrance_gid=7652642501077041704&log_from=a3995241fff8d8_1782019314934',
+              sina: 'https://m.weibo.cn/u/6502265335?wm=3333_2001&from=10G6293010&sourcetype=weixin&s_trans=UE8qZ222HFcNSQkJBTQi4w%3D%3D__s&s_channel=4',
+              sohu: 'https://mp.sohu.com/profile?xpt=ZDM4NWYyMjUtZWM5NC00NDg2LTkxZDUtN2Y0ZGRkZTZlZWNm&spm=smpc.content.author.1.1782018926108Dm9Gzgh'
             }
           });
           setLoading(false);

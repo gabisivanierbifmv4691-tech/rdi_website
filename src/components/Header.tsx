@@ -37,6 +37,14 @@ export default function Header({ lang, onToggleLang, showIntro = false }: Header
   const location = useLocation();
   const navigate = useNavigate();
 
+  const getSocialLinkProps = (key: string) => {
+    const href = homeConfig?.socialLinks?.[key] || '#';
+    if (href === '#') {
+      return { href, onClick: (e: React.MouseEvent) => e.preventDefault() };
+    }
+    return { href, target: "_blank", rel: "noopener noreferrer" };
+  };
+
   const handleLogoClick = (e: React.MouseEvent, ref: React.RefObject<HTMLDivElement>, isInternalMenu = false) => {
     e.preventDefault();
     if (location.pathname === '/') {
@@ -463,14 +471,14 @@ export default function Header({ lang, onToggleLang, showIntro = false }: Header
                 </div>
 
                 <div className="flex items-center gap-6">
-                  <a href="#" className="hover:opacity-50 transition-opacity">{getSocialIcon('wechat', WeChatIcon)}</a>
-                  <a href="#" className="hover:opacity-50 transition-opacity">{getSocialIcon('tiktok', TikTokIcon)}</a>
-                  <a href="#" className="hover:opacity-50 transition-opacity">{getSocialIcon('rednote', XiaohongshuIcon)}</a>
-                  <a href="#" className="hover:opacity-50 transition-opacity">{getSocialIcon('bilibili', BilibiliIcon)}</a>
-                  <a href="#" className="hover:opacity-50 transition-opacity">{getSocialIcon('instagram', InstagramIcon)}</a>
-                  <a href="#" className="hover:opacity-50 transition-opacity">{getSocialIcon('facebook', FacebookIcon)}</a>
-                  <a href="#" className="hover:opacity-50 transition-opacity">{getSocialIcon('linkedin', LinkedinIcon)}</a>
-                  <a href="#" className="hover:opacity-50 transition-opacity">{getSocialIcon('youtube', YoutubeIcon)}</a>
+                  <a {...getSocialLinkProps('wechat')} className="hover:opacity-50 transition-opacity">{getSocialIcon('wechat', WeChatIcon)}</a>
+                  <a {...getSocialLinkProps('tiktok')} className="hover:opacity-50 transition-opacity">{getSocialIcon('tiktok', TikTokIcon)}</a>
+                  <a {...getSocialLinkProps('rednote')} className="hover:opacity-50 transition-opacity">{getSocialIcon('rednote', XiaohongshuIcon)}</a>
+                  <a {...getSocialLinkProps('bilibili')} className="hover:opacity-50 transition-opacity">{getSocialIcon('bilibili', BilibiliIcon)}</a>
+                  <a {...getSocialLinkProps('instagram')} className="hover:opacity-50 transition-opacity">{getSocialIcon('instagram', InstagramIcon)}</a>
+                  <a {...getSocialLinkProps('facebook')} className="hover:opacity-50 transition-opacity">{getSocialIcon('facebook', FacebookIcon)}</a>
+                  <a {...getSocialLinkProps('linkedin')} className="hover:opacity-50 transition-opacity">{getSocialIcon('linkedin', LinkedinIcon)}</a>
+                  <a {...getSocialLinkProps('youtube')} className="hover:opacity-50 transition-opacity">{getSocialIcon('youtube', YoutubeIcon)}</a>
                 </div>
               </div>
             </div>

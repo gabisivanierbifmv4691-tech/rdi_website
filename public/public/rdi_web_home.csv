@@ -1,7 +1,18 @@
-﻿首屏大图,1,2,3,4,5,,,,,,,,,,,
-id,guangzhou-xpeng,shanghai-west-bund-museum,hangzhou-baolizhiyexiyuanfu,shanghai-suitangli,nanjing-baiyunting,,,,,,,,,,,
-,,,,,,,,,,,,,,,,
-图片栏,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
-id,shanghai-jingan-sculpture-park,dali-yuntuo-distillery,shanghai-comac-hq,shanghai-suitangli,beijing-palace-museum-exhibition,shanghai-expo-greenhouse,midea-science-center,20240410_mdw,shanghai-psa,20240315_lw,shanghai-nhm,circadian_rhythm,shanghai-hengfeng-bridge,hk-tai-kwun-exhibition,hangzhou-center,shanghai-yuyuan-mall
-aspect,aspect-square,aspect-square,aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-square,aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-square,aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-square,aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],,,
-span,md:col-span-2 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2
+﻿首屏大图,1,2,3,4,5,,,,,,,,,,,,,
+id,guangzhou-xpeng,shanghai-west-bund-museum,shanghai-hengfeng-bridge,shanghai-comac-hq,nanjing-baiyunting,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,
+图片栏,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
+id,shanghai-jingan-sculpture-park,dali-yuntuo-distillery,shanghai-comac-hq,shanghai-suitangli,beijing-palace-museum-exhibition,shanghai-expo-greenhouse,shenzhen-houhai-tairun,20240410_mdw,shanghai-psa,20240315_lw,shanghai-nhm,circadian_rhythm,shanghai-hengfeng-bridge,hk-tai-kwun-exhibition,hangzhou-center,shanghai-yuyuan-mall,xiamen-mixc-p2-in,shanghai-film-art-center
+aspect,aspect-square,aspect-square,aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-square,aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-square,aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-square,aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],aspect-[4/4] md:aspect-auto h-full min-h-[300px],,,,,
+span,md:col-span-2 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2,md:col-span-1 md:row-span-2
+,,,,,,,,,,,,,,,,,,
+rednote,https://www.xiaohongshu.com/user/profile/61f688c90000000010004a51?xsec_token=ABnkNVG6YtgP1KAX3iDhl7XnJoxkbGjFn2HNztL1bVlwA=&xsec_source=pc_note&tab=note&subTab=note,,,,,,,,,,,,,,,,,
+wechat,https://mp.weixin.qq.com/s/Tg8XEk4XtzZrwuZLsJwzTw,,,,,,,,,,,,,,,,,
+zhihu,https://www.zhihu.com/people/rdilighting,,,,,,,,,,,,,,,,,
+x,https://x.com/rdi_mkt,,,,,,,,,,,,,,,,,
+instagram,https://www.instagram.com/rdilighting?igsh=dTM4dDZjcmZ1MTdi&utm_source=ig_contact_invite,,,,,,,,,,,,,,,,,
+facebook,https://www.facebook.com/share/1H3K9JGPHe/?mibextid=wwXIfr,,,,,,,,,,,,,,,,,
+linkedin,https://www.linkedin.com/company/rdilighting/,,,,,,,,,,,,,,,,,
+Toutiao,https://www.toutiao.com/c/user/token/MS4wLjABAAAAjvj1_Mik8pBKs0OWDDw1fguiD5Bj3HyWhUqRvcUgnO3EKq5PrumoaE7RWhwZk1K8/?source=tuwen_detail&entrance_gid=7652642501077041704&log_from=a3995241fff8d8_1782019314934,,,,,,,,,,,,,,,,,
+Sina,https://m.weibo.cn/u/6502265335?wm=3333_2001&from=10G6293010&sourcetype=weixin&s_trans=UE8qZ222HFcNSQkJBTQi4w%3D%3D__s&s_channel=4,,,,,,,,,,,,,,,,,
+Sohu,https://mp.sohu.com/profile?xpt=ZDM4NWYyMjUtZWM5NC00NDg2LTkxZDUtN2Y0ZGRkZTZlZWNm&spm=smpc.content.author.1.1782018926108Dm9Gzgh,,,,,,,,,,,,,,,,,
