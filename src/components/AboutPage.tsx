@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import type { Language } from '../App';
 
@@ -5,41 +6,22 @@ interface AboutPageProps {
   lang: Language;
 }
 
-const realEstatePartners = [
-  { group: 'A', items: ['安邦集团'] },
-  { group: 'B', items: ['宝龙集团', '保利地产', 'Boeing波音'] },
-  { group: 'F', items: ['复星地产', '飞洲国际'] },
-  { group: 'G', items: ['高力地产', '岗宏集团'] },
-  { group: 'H', items: ['华润置地', '华侨城', '华强集团', '恒大集团'] },
-  { group: 'J', items: ['金地集团', '金鹰国际', '金大地', '经纬置地', '静安区市容局'] },
-  { group: 'K', items: ['凯德集团', 'HYATT凯悦'] },
-  { group: 'L', items: ['绿地集团', '陆家嘴集团', '鹿鸣谷', '龙湖地产', '临港集团'] },
-  { group: 'M', items: ['Mercedes-Benz奔驰'] },
-  { group: 'R', items: ['融创'] },
-  { group: 'S', items: ['Shui On Land瑞安集团', '世茂集团', '中信泰富', '上海达任置业', '上海地产', '三湘集团', '上实集团', '上海天文馆'] },
-  { group: 'T', items: ['TISHMAN SPEYER铁狮门', '太古地产', '天誉置业'] },
-  { group: 'W', items: ['万年基业集团', '万科集团', '王府井集团', '吴园美术馆', '吴中美术馆', '吴江宾馆'] },
-  { group: 'X', items: ['现代集团', '协和房地产'] },
-  { group: 'Y', items: ['远洋集团', '阳光城集团', '银城地产', '伊甸城房产'] },
-  { group: 'Z', items: ['中信置业', '中洲集团', '中海集团', '中国铁建', '中粮集团', '中央美术学院', '中集产城', '招商局集团'] }
+interface Partner {
+  zh: string;
+  en: string;
+}
+
+interface GroupedPartners {
+  group: string;
+  items: string[];
+}
+
+const STATIC_DEVELOPERS: Partner[] = [
+
 ];
 
-const designPartners = [
-  { group: 'A', items: ['AECOM', 'Aedas凯达环球'] },
-  { group: 'B', items: ['BroadwayMalyan', 'BENOY', 'B+H', 'BCA'] },
-  { group: 'C', items: ['BeltCollins贝尔高林', 'CRTKL', 'CCDI'] },
-  { group: 'D', items: ['DLR Group', '大舍建筑', '都设设计'] },
-  { group: 'E', items: ['ENNEAD'] },
-  { group: 'F', items: ['5+Design(五杰设计)', '飞来飞去'] },
-  { group: 'G', items: ['Goettsch Partners', 'Gensler'] },
-  { group: 'H', items: ['HLW LLP', 'HENN', '华东建筑设计研究院'] },
-  { group: 'J', items: ['JERDE'] },
-  { group: 'K', items: ['OKAISTUDIOS', 'KPF'] },
-  { group: 'M', items: ['蒙泰室内设计'] },
-  { group: 'S', items: ['SASAKI', 'SWA', 'SOM'] },
-  { group: 'T', items: ['同济建筑设计研究院', '天华建筑', '同济创意设计学院'] },
-  { group: 'W', items: ['wcot'] },
-  { group: 'Z', items: ['浙大建筑设计研究院', '中央美术学院'] }
+const STATIC_DESIGNERS: Partner[] = [
+
 ];
 
 const gridImages = [
@@ -63,41 +45,157 @@ const gridImages = [
   "https://images.unsplash.com/photo-1454165833267-2720d2930267"
 ];
 
+function groupPartners(partners: Partner[], lang: Language): GroupedPartners[] {
+  const groups: Record<string, string[]> = {};
+  
+  partners.forEach(p => {
+    const displayName = lang === 'cn' ? p.zh : p.en;
+    if (!displayName) return;
+    
+    const enName = p.en.trim();
+    let firstChar = 'A';
+    if (enName.length > 0) {
+      const char = enName[0].toUpperCase();
+      if (char >= 'A' && char <= 'Z') {
+        firstChar = char;
+      } else {
+        firstChar = '#';
+      }
+    }
+    
+    if (!groups[firstChar]) {
+      groups[firstChar] = [];
+    }
+    groups[firstChar].push(displayName);
+  });
+  
+  return Object.keys(groups)
+    .sort((a, b) => {
+      if (a === '#') return 1;
+      if (b === '#') return -1;
+      return a.localeCompare(b);
+    })
+    .map(group => ({
+      group,
+      items: groups[group]
+    }));
+}
+
 export default function AboutPage({ lang }: AboutPageProps) {
+  const [realEstateList, setRealEstateList] = useState<GroupedPartners[]>([]);
+  const [designList, setDesignList] = useState<GroupedPartners[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    
+    const fetchPartners = async () => {
+      try {
+        const response = await fetch('https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/client.csv');
+        if (!response.ok) throw new Error('Failed to fetch client.csv');
+        const text = await response.text();
+        
+        // Robust CSV splitter
+        const lines = text.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+        
+        const devCN: string[] = [];
+        const devEN: string[] = [];
+        const designCN: string[] = [];
+        const designEN: string[] = [];
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          if (line.includes('地产开发商 / 业主') && lines[i + 1]) {
+            devCN.push(...lines[i + 1].split(',').map(s => s.trim()).filter(Boolean));
+          }
+          if (line.includes('Real Estate Developers / Owners') && lines[i + 1]) {
+            devEN.push(...lines[i + 1].split(',').map(s => s.trim()).filter(Boolean));
+          }
+          if (line.includes('设计公司 / 机构') && lines[i + 1]) {
+            designCN.push(...lines[i + 1].split(',').map(s => s.trim()).filter(Boolean));
+          }
+          if (line.includes('Design Companies / Institutions') && lines[i + 1]) {
+            designEN.push(...lines[i + 1].split(',').map(s => s.trim()).filter(Boolean));
+          }
+        }
+
+        const developers: Partner[] = [];
+        for (let j = 0; j < Math.max(devCN.length, devEN.length); j++) {
+          developers.push({
+            zh: devCN[j] || devEN[j] || '',
+            en: devEN[j] || devCN[j] || ''
+          });
+        }
+
+        const designers: Partner[] = [];
+        for (let j = 0; j < Math.max(designCN.length, designEN.length); j++) {
+          designers.push({
+            zh: designCN[j] || designEN[j] || '',
+            en: designEN[j] || designCN[j] || ''
+          });
+        }
+
+        if (isMounted) {
+          if (developers.length > 0) {
+            setRealEstateList(groupPartners(developers, lang));
+          } else {
+            setRealEstateList(groupPartners(STATIC_DEVELOPERS, lang));
+          }
+          
+          if (designers.length > 0) {
+            setDesignList(groupPartners(designers, lang));
+          } else {
+            setDesignList(groupPartners(STATIC_DESIGNERS, lang));
+          }
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Failed to load partners dynamically, loading defaults:', err);
+        if (isMounted) {
+          setRealEstateList(groupPartners(STATIC_DEVELOPERS, lang));
+          setDesignList(groupPartners(STATIC_DESIGNERS, lang));
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchPartners();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [lang]);
+
   const t = {
-    title: lang === 'cn' ? 'RDI 瑞国际照明设计 | 公司简介' : 'RDI LIGHTING DESIGN | COMPANY PROFILE',
+    title: lang === 'cn' ? '公司简介' : 'Company Profile',
     intro: lang === 'cn' 
-      ? '瑞国际照明设计（RDI）是一家具有创造力的建筑照明顾问公司，成立于 2012 年，现于上海、香港、深圳和纽约设有办公室。我们为不同领域的项目进行照明设计服务工作，诸如总体城市规划、超高层、综合体开发、交通枢纽、艺术装置、酒店和展览等。' 
-      : 'RDI Lighting Design is a highly creative architectural lighting consultancy. Established in 2012, we maintain staffed offices in Shanghai, Hong Kong, Shenzhen, and New York, providing thorough lighting design services globally for master urban planning, high-rise buildings, mixed-use complexes, transit hubs, art installations, luxury hotels, and exhibitions.',
-    philosophyTitle: lang === 'cn' ? '精英团队与多元学科' : 'ELITE MULTIDISCIPLINARY TEAM',
-    philosophySub: lang === 'cn' 
-      ? '交叉分享，智慧创想' 
-      : 'Cross-disciplinary collaboration powering optimal design options',
-    philosophyText: lang === 'cn'
-      ? '我司拥有高素质的设计团队，其中有照明专业博士、注册建筑师、认证照明设计师、中国照明学会高级成员、亚洲照明学会高级成员、国际照明设计师协会成员，已经获得了众多设计奖项。我们的员工来自于不同的学科背景，诸如建筑设计、室内设计、戏剧灯光、艺术设计、媒体设计、光源研发、工程及展览展示设计，各领域的交叉分享使得团队能够为客户提供最完善的设计方案。'
-      : 'Our highly qualified design team consists of Ph.D. holders in lighting, registered architects, certified lighting designers, and senior members of prestigious illuminating institutions (CIES, AALD, IALD). Coming from diverse backgrounds in architecture, interior design, theatrical stage lighting, fine arts, media design, light source R&D, and structural engineering, our cross-disciplinary sharing delivers flawless results for our clients.',
-    processTitle: lang === 'cn' ? '全域设计与学术广度' : 'GLOBAL VISION & DISCIPLINARY STRENGTH',
-    processSub: lang === 'cn' ? '探索光的应用极限' : 'Testing the aesthetic and technological boundaries of light',
-    processText: lang === 'cn'
-      ? '我司为全球诸多设计院及设计公司提供了照明设计咨询及服务，包括 Jerde 国际事务所，美国 GP 建筑事务所，SOM 建筑设计事务所，KPF 建筑事务所，5+五杰设计咨询（上海）有限公司，天华建筑设计有限公司等。涉及众多建筑、景观、城市规划等领域的项目，采用先进的手段进行照明设计，不断探索光的应用极限。'
-      : 'We have provided state-of-the-art lighting consultations and masterplans for world-renowned design offices including Jerde Partnership, GP (Goettsch Partners), SOM, KPF, 5+design, and Tianhua. Spanning architecture, public landscape, and town planning, our methodologies employ advanced lighting simulations to push past conventional applications.',
-    stepTitle: lang === 'cn' ? '经典战略开发商伙伴' : 'STRATEGIC REAL ESTATE CLIENTS',
-    stepList: lang === 'cn'
-      ? ['绿地集团 (Greenland)', '华润置地 (China Resources Land)', '金地集团 (Gemdale)', '瑞安房地产 (Shui On Land)', '宝龙地产 (Powerlong)', '远洋集团 (Sino-Ocean Group)', '世茂集团 (Shimao)', '万科集团 (Vanke)', '龙湖集团 (Longfor)']
-      : ['Greenland Group (绿地集团)', 'China Resources Land (华润置地)', 'Gemdale (金地集团)', 'Shui On Land (瑞安房地产)', 'Powerlong (宝龙地产)', 'Sino-Ocean (远洋集团)', 'Shimao (世茂集团)', 'Vanke (万科)', 'Longfor Group (龙湖集团)'],
-    sustainabilityTitle: lang === 'cn' ? '丰富经验与地标代表' : 'ABUNDANT COMPLEX WORLDWIDE EXPERIENCE',
-    sustainabilityText: lang === 'cn'
-      ? '目前，我司在全国各地的项目中拥有丰富的经验，在超高层，综合体，酒店，示范区等诸多领域中均有地标性项目代表。在众多项目设计、施工、管理的长期合作过程中，我司已非常了解照明项目的各方需求及现状问题。'
-      : 'To date, RDI has compiled a massive track record globally, establishing prestigious landmarks across skyscrapers, mixed-use commercial nodes, international luxury hotels, and cultural pavilions. Through years of project management, we hold deep empathy for site challenges, client expectations, and engineering coordinates.',
-    daylightTitle: lang === 'cn' ? '美好愿景与品质承托' : 'OUR VISION & HOLISTIC COMMITMENT',
-    daylightText: lang === 'cn'
-      ? '通过在全球各个办公室之间始终保持的协作沟通中，我司将充分利用专业技能，保证在本地或国际项目工作时能够满足顾问和客户的需要，实现照明设计的美好愿景。'
-      : 'By maintaining an effortless collaborative workflow across our Shanghai, Hong Kong, Shenzhen, and New York offices, we leverage integrated global resources to satisfy every delicate requirement. RDI remains fully committed to turning the dream of elegant architectural illumination into stable, stunning realities.',
-    collaborationTitle: lang === 'cn' ? '全球化协作' : 'GLOBAL OFFICE CONNECTIVITY',
-    collaborationText: lang === 'cn'
-      ? '我们在各个办公室之间始终保持最亲密的协作沟通。这得益于我们强大的远程共享云与高标准的技术流支持，使得任何时区的客户都能享受到同等卓越的设计效率。'
-      : 'No matter the project location, RDI guarantees the same standard of design efficiency and technological implementation. This unified global resource sharing provides a powerful support matrix for all clients.',
-    partnersTitle: lang === 'cn' ? '全渠道合作伙伴选择' : 'SELECTION OF STRATEGIC PARTNERS',
+      ? 'RDI瑞国际照明设计（隶属于上海瑞逸环境设计有限公司）创立于2012年，是一家极具创新力的全球化专业照明顾问品牌。公司现已形成成熟的国际化服务布局，在上海、深圳、香港设立注册直营办公室，于纽约、新加坡设立海外办事处，搭建跨时区、跨地域高效协同网络。十余年来，团队凭借前沿设计理念与扎实落地能力，业务版图覆盖亚洲、欧洲、北美洲、南极洲等全球多地，持续斩获多项国际权威照明设计大奖，是业内兼具综合实力、创新能力与国际口碑的标杆照明设计机构。' 
+      : 'Founded in 2012, RDESIGN INTERNATIONAL Lighting Design (a subsidiary of Shanghai Ruiyi Environmental Design Co., Ltd.) is a highly innovative global professional lighting consultancy. We have established a mature international service network with direct offices in Shanghai, Shenzhen, and Hong Kong, along with overseas representative offices in New York and Singapore, creating an efficient, cross-time-zone, and cross-regional collaborative system. Over the past decade, leveraging our cutting-edge design philosophy and robust implementation capabilities, RDI has expanded its business footprint across Asia, Europe, North America, and Antarctica. A recipient of numerous prestigious international lighting design awards, RDI is recognized as an industry benchmark, combining comprehensive strength, creative excellence, and global reputation.',
+    
+    sec1Title: lang === 'cn' ? '一、全域光影设计，重塑空间价值' : 'I. Comprehensive Lighting Solutions: Reshaping Spatial Value',
+    sec1Text: lang === 'cn'
+      ? 'RDI专注全案照明设计，业务涵盖城市规划、地标建筑、商业综合体、高端酒店、文博艺术及高定住宅等多元领域，设计范畴贯通建筑、室内与景观全空间。我们坚持“美学表达与功能实用并行，艺术价值与生态节能兼顾”，以光为媒介，精准赋能城市空间，提升场景品质。'
+      : 'RDI specializes in full-scope lighting design, with a portfolio spanning urban planning, landmark architecture, commercial complexes, luxury hotels, cultural and museum projects, and high-end residential developments. Our design scope integrates architecture, interior, and landscape spaces. We adhere to the principle of "balancing aesthetic expression with functional utility, and artistic value with ecological sustainability," using light as a medium to empower urban spaces and enhance the quality of the built environment.',
+    
+    sec2Title: lang === 'cn' ? '二、精英跨界团队，链接全球大师' : 'II. Multidisciplinary Elite Team: Connecting with Global Masters',
+    sec2Text1: lang === 'cn'
+      ? 'RDI拥有一支高资质、复合型精英设计团队，核心成员包含照明专业博士、注册建筑师、国际认证照明设计师及中、亚洲、国际照明学会高级会员，团队累计斩获百余项国内外设计大奖，专业底蕴深厚。成员涵盖建筑、室内、景观、戏剧灯光、艺术装置、新媒体艺术、工程落地等多学科背景，通过跨学科创意交融，突破传统照明设计边界，高效解决各类复杂项目设计难题。'
+      : 'RDI boasts a highly qualified and diverse team of elite designers, including PhDs in lighting, registered architects, certified international lighting designers, and senior members of regional and international lighting societies. Our team has garnered over a hundred domestic and international awards, grounded in deep professional expertise. With backgrounds ranging from architecture and interior design to landscape, stage lighting, art installations, new media art, and engineering, our multidisciplinary team excels at breaking traditional boundaries and solving complex design challenges.',
+    sec2Text2: lang === 'cn'
+      ? '依托国际化项目经验，公司长期与全球殿堂级建筑大师及一线设计机构深度合作，合作大师包括David Alan Chipperfield、矶崎新、Jean Nouvel、Rem Koolhaas、Norman Foster、Tadao Ando、Alvaro Siza等；长期合作事务所涵盖MAD、SOM、KPF、GP、Jerde、5+、Aedas、Benoy等国内外顶尖机构，同时与众多头部房企保持稳定战略合作，持续落地全球标杆性光影项目。'
+      : 'Drawing on our extensive international experience, we have established long-term, deep collaborations with world-renowned architects such as David Alan Chipperfield, Arata Isozaki, Jean Nouvel, Rem Koolhaas, Norman Foster, Tadao Ando, and Alvaro Siza. We also maintain strategic partnerships with top-tier firms including MAD, SOM, KPF, GP, Jerde, 5+, Aedas, and Benoy, as well as leading real estate developers, continuously delivering iconic global lighting projects.',
+    
+    sec3Title: lang === 'cn' ? '三、数智驱动设计，保障极致落地' : 'III. Digital-Driven Design: Ensuring Flawless Execution',
+    sec3Text: lang === 'cn'
+      ? '公司搭建完善的云端协同体系与标准化技术流程，依托跨区域智能协作平台，实现国内外站点无缝联动、跨时区高效配合，为全球客户提供统一、高效、高品质的设计服务。同时，团队持续以前沿科技赋能设计创新，利用数字化设计、交互技术、人工智能技术支持方案创作、优化迭代、工程落地全流程，不断探索光的应用极限，打造兼具健康舒适、艺术创意、人文质感的优质光影空间。'
+      : 'We have built a comprehensive cloud-based collaboration system and standardized technical workflows. Supported by our cross-regional intelligent platform, we achieve seamless coordination across domestic and international sites, ensuring consistent, high-quality service for our global clients. Furthermore, we continuously empower our creativity with frontier technologies. By utilizing digital design, interactive media, and artificial intelligence throughout the entire process—from conceptualization and iteration to construction—we push the boundaries of light to create high-quality spaces that are healthy, comfortable, artistic, and human-centric.',
+    
+    sec4Title: lang === 'cn' ? '四、品牌理念愿景，深耕创新未来' : 'IV. Brand Philosophy and Vision: Deepening Innovation for the Future',
+    sec4Text: lang === 'cn'
+      ? 'RDI瑞国际照明设计始终秉持“以光为艺、以质为核、创新赋能、赋能城市”的核心理念，深耕光影艺术创新与绿色节能设计，专注平衡光与建筑、自然、城市人文的共生关系。未来，公司将持续深化全球化布局与科技化设计升级，依托跨学科团队与国际合作优势，持续输出高品质、前瞻性的照明设计成果，致力打造世界级照明设计标杆品牌。'
+      : 'RDI consistently upholds our core philosophy: "Light as Art, Quality as Core, Innovation as Empowerment, and Empowering the City." We are committed to fostering innovations in light art and green energy-efficient design, focusing on the symbiotic relationship between light, architecture, nature, and urban culture. Looking ahead, RDI will continue to deepen our global presence and upgrade our technological design capabilities. By leveraging our multidisciplinary expertise and international collaborative advantages, we aim to consistently deliver high-quality, forward-looking lighting solutions and aspire to become a world-class benchmark in the lighting design industry.',
+    
+    partnersTitle: lang === 'cn' ? '合作伙伴' : 'PARTNERS',
   };
 
   return (
@@ -116,7 +214,7 @@ export default function AboutPage({ lang }: AboutPageProps) {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="text-lg text-gray-700 leading-relaxed max-w-2xl"
+          className="text-lg text-gray-700 leading-relaxed font-light"
         >
           {t.intro}
         </motion.p>
@@ -126,29 +224,55 @@ export default function AboutPage({ lang }: AboutPageProps) {
       <section className="w-full h-[70vh] mb-24 overflow-hidden">
         <img 
           src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2000"
-          alt="Studio"
+          alt="RDI Studio Space"
           className="w-full h-full object-cover"
           referrerPolicy="no-referrer"
         />
       </section>
 
-      {/* Philosophy Section */}
+      {/* Section I */}
       <section className="max-w-4xl mx-auto px-8 mb-24">
-        <h2 className="text-2xl font-bold mb-4 uppercase tracking-wider">{t.philosophyTitle}</h2>
-        <p className="font-bold mb-8 text-lg">{t.philosophySub}</p>
-        <div className="text-gray-700 leading-relaxed space-y-6">
-          <p>{t.philosophyText}</p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="text-xl md:text-2xl font-bold mb-6 uppercase tracking-wider text-black">
+            {t.sec1Title}
+          </h2>
+          <p className="text-gray-700 leading-relaxed text-[15px] md:text-base font-light">
+            {t.sec1Text}
+          </p>
+        </motion.div>
       </section>
 
-      {/* Image Grid */}
-      <section className="max-w-7xl mx-auto px-4 mb-32">
+      {/* Section II */}
+      <section className="max-w-4xl mx-auto px-8 mb-24">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="text-xl md:text-2xl font-bold mb-6 uppercase tracking-wider text-black">
+            {t.sec2Title}
+          </h2>
+          <div className="space-y-6 text-gray-700 leading-relaxed text-[15px] md:text-base font-light">
+            <p>{t.sec2Text1}</p>
+            <p>{t.sec2Text2}</p>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* Image Grid representing creative collaboration */}
+      <section className="max-w-7xl mx-auto px-4 mb-24">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-1">
           {gridImages.map((src, idx) => (
             <div key={idx} className="aspect-square overflow-hidden bg-gray-100">
               <img 
                 src={`${src}?auto=format&fit=crop&q=60&w=400`}
-                alt={`Studio life ${idx}`}
+                alt={`RDI Studio life ${idx}`}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                 referrerPolicy="no-referrer"
               />
@@ -157,73 +281,60 @@ export default function AboutPage({ lang }: AboutPageProps) {
         </div>
       </section>
 
-      {/* Design and Process */}
-      <section className="max-w-4xl mx-auto px-8 mb-32">
-        <h2 className="text-2xl font-bold mb-4 uppercase tracking-wider">{t.processTitle}</h2>
-        <p className="font-bold mb-8 text-lg">{t.processSub}</p>
-        <p className="text-gray-700 leading-relaxed mb-16">{t.processText}</p>
+      {/* Section III */}
+      <section className="max-w-4xl mx-auto px-8 mb-24">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="text-xl md:text-2xl font-bold mb-6 uppercase tracking-wider text-black">
+            {t.sec3Title}
+          </h2>
+          <p className="text-gray-700 leading-relaxed text-[15px] md:text-base font-light">
+            {t.sec3Text}
+          </p>
+        </motion.div>
+      </section>
 
-        <div className="flex flex-col md:flex-row gap-12 items-center">
-          <div className="flex-1">
-            <img 
-              src="https://images.unsplash.com/photo-1541888941259-7b3b9517ab42?auto=format&fit=crop&q=80&w=1000"
-              alt="Process"
-              className="w-full aspect-[4/5] object-cover"
-              referrerPolicy="no-referrer"
-            />
-          </div>
-          <div className="flex-1">
-            <span className="text-4xl text-gray-300 font-light mb-4 block">01</span>
-            <h3 className="text-xl font-bold mb-8 uppercase tracking-widest">{t.stepTitle}</h3>
-            <ul className="space-y-4 text-sm text-gray-600">
-              {t.stepList.map((item, idx) => (
-                <li key={idx} className="border-b border-gray-100 pb-2">{item}</li>
-              ))}
-            </ul>
-          </div>
+      {/* Curated Process Banner */}
+      <section className="max-w-4xl mx-auto px-8 mb-24">
+        <div className="w-full h-[45vh] overflow-hidden rounded-sm">
+          <img 
+            src="https://images.unsplash.com/photo-1503387762-592dea58ef23?auto=format&fit=crop&q=80&w=1500"
+            alt="Design and Engineering Process"
+            className="w-full h-full object-cover"
+            referrerPolicy="no-referrer"
+          />
         </div>
       </section>
 
-      {/* Sustainability */}
+      {/* Section IV */}
       <section className="max-w-4xl mx-auto px-8 mb-32">
-        <h2 className="text-2xl font-bold mb-12 uppercase tracking-wider">{t.sustainabilityTitle}</h2>
-        <p className="text-gray-700 leading-relaxed mb-24">{t.sustainabilityText}</p>
-
-        <div className="flex flex-col md:flex-row gap-12 items-center">
-          <div className="flex-1">
-            <img 
-              src="https://images.unsplash.com/photo-1503387762-592dea58ef23?auto=format&fit=crop&q=80&w=1000"
-              alt="Daylighting"
-              className="w-full aspect-square object-cover"
-              referrerPolicy="no-referrer"
-            />
-          </div>
-          <div className="flex-1">
-            <span className="text-4xl text-gray-300 font-light mb-4 block">01</span>
-            <h3 className="text-xl font-bold mb-4 uppercase tracking-widest">{t.daylightTitle}</h3>
-            <p className="text-sm text-gray-600 leading-relaxed">{t.daylightText}</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Collaboration */}
-      <section className="max-w-4xl mx-auto px-8 mb-32">
-        <h2 className="text-2xl font-bold mb-4 uppercase tracking-wider">{t.collaborationTitle}</h2>
-        <p className="font-bold mb-8 text-lg">{t.processSub}</p>
-        <p className="text-gray-700 leading-relaxed">{t.collaborationText}</p>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="text-xl md:text-2xl font-bold mb-6 uppercase tracking-wider text-black">
+            {t.sec4Title}
+          </h2>
+          <p className="text-gray-700 leading-relaxed text-[15px] md:text-base font-light">
+            {t.sec4Text}
+          </p>
+        </motion.div>
       </section>
 
       {/* Partners List */}
-      <section className="bg-neutral-50 border-t border-neutral-150 py-24 px-8 md:px-16 flex justify-center">
+      <section id="partners" className="bg-neutral-50 py-24 px-8 md:px-16 flex justify-center">
         <div className="w-full max-w-[1280px]">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-[10px] font-bold text-amber-600 uppercase tracking-[0.2em] block mb-3 font-mono">
-              {lang === 'cn' ? '合作网络' : 'CLIENTS & PARTNERS'}
-            </span>
-            <h2 className="text-xl md:text-2xl font-bold tracking-widest text-black uppercase mb-4">
+          <div className="max-w-4xl mx-auto text-left mb-16 px-8 lg:px-0">
+            <h2 className="text-xl md:text-2xl font-bold tracking-widest text-black uppercase mb-4 text-center">
               {t.partnersTitle}
             </h2>
-            <p className="text-xs text-neutral-500 leading-relaxed font-light">
+            <p className="text-base text-neutral-500 leading-relaxed font-light">
               {lang === 'cn'
                 ? '我们为全球诸多设计院及设计公司提供照明设计咨询及服务，与众多知名房地产集团保持长期的项目合作关系。'
                 : 'We provide lighting design consultancy and services to numerous design institutes and design firms globally, and maintain long-term project partnerships with leading real estate groups.'}
@@ -233,47 +344,59 @@ export default function AboutPage({ lang }: AboutPageProps) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-24">
             {/* Real Estate Developers Column */}
             <div className="space-y-8">
-              <div className="border-b border-black pb-4 flex justify-between items-baseline">
-                <h3 className="text-xs font-bold text-black tracking-widest uppercase">
+              <div className="pb-4 flex justify-between items-baseline">
+                <h3 className="text-base font-bold text-black tracking-widest uppercase">
                   {lang === 'cn' ? '地产开发商 / 业主' : 'REAL ESTATE DEVELOPERS & OWNERS'}
                 </h3>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
-                {realEstatePartners.map((group, idx) => (
-                  <div key={idx} className="flex gap-4 items-start pb-4 border-b border-neutral-200/60 last:border-0">
-                    <span className="text-xs font-mono font-bold text-neutral-300 w-4 block pt-0.5">{group.group}</span>
-                    <div className="space-y-1.5 flex-1">
-                      {group.items.map((item, idy) => (
-                        <div key={idy} className="text-xs text-neutral-600 hover:text-black transition-colors font-light leading-relaxed">
-                          {item}
-                        </div>
-                      ))}
-                    </div>
+                {loading ? (
+                  <div className="col-span-2 text-center text-base text-neutral-400 py-4 font-mono">
+                    Loading partners...
                   </div>
-                ))}
+                ) : (
+                  realEstateList.map((group, idx) => (
+                    <div key={idx} className="flex gap-4 items-start pb-4 last:border-0">
+                      <span className="text-sm font-mono font-bold text-neutral-300 w-4 block pt-0.5">{group.group}</span>
+                      <div className="space-y-1.5 flex-1">
+                        {group.items.map((item, idy) => (
+                          <div key={idy} className="text-sm text-neutral-600 hover:text-black transition-colors font-light leading-relaxed">
+                            {item}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
             {/* Design Companies Column */}
             <div className="space-y-8">
-              <div className="border-b border-black pb-4 flex justify-between items-baseline">
-                <h3 className="text-xs font-bold text-black tracking-widest uppercase">
+              <div className="pb-4 flex justify-between items-baseline">
+                <h3 className="text-base font-bold text-black tracking-widest uppercase">
                   {lang === 'cn' ? '设计公司 / 机构' : 'DESIGN FIRMS & INSTITUTES'}
                 </h3>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
-                {designPartners.map((group, idx) => (
-                  <div key={idx} className="flex gap-4 items-start pb-4 border-b border-neutral-200/60 last:border-0">
-                    <span className="text-xs font-mono font-bold text-neutral-300 w-4 block pt-0.5">{group.group}</span>
-                    <div className="space-y-1.5 flex-1">
-                      {group.items.map((item, idy) => (
-                        <div key={idy} className="text-xs text-neutral-600 hover:text-black transition-colors font-light leading-relaxed">
-                          {item}
-                        </div>
-                      ))}
-                    </div>
+                {loading ? (
+                  <div className="col-span-2 text-center text-base text-neutral-400 py-4 font-mono">
+                    Loading partners...
                   </div>
-                ))}
+                ) : (
+                  designList.map((group, idx) => (
+                    <div key={idx} className="flex gap-4 items-start pb-4 last:border-0">
+                      <span className="text-sm font-mono font-bold text-neutral-300 w-4 block pt-0.5">{group.group}</span>
+                      <div className="space-y-1.5 flex-1">
+                        {group.items.map((item, idy) => (
+                          <div key={idy} className="text-sm text-neutral-600 hover:text-black transition-colors font-light leading-relaxed">
+                            {item}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
