@@ -169,7 +169,7 @@ export default function AboutPage({ lang }: AboutPageProps) {
   const t = {
     title: lang === 'cn' ? '公司简介' : 'Company Profile',
     intro: lang === 'cn' 
-      ? 'RDI瑞国际照明设计（隶属于上海瑞逸环境设计有限公司）创立于2012年，是一家极具创新力的全球化专业照明顾问品牌。公司现已形成成熟的国际化服务布局，在上海、深圳、香港设立注册直营办公室，于纽约、新加坡设立海外办事处，搭建跨时区、跨地域高效协同网络。十余年来，团队凭借前沿设计理念与扎实落地能力，业务版图覆盖亚洲、欧洲、北美洲、南极洲等全球多地，持续斩获多项国际权威照明设计大奖，是业内兼具综合实力、创新能力与国际口碑的标杆照明设计机构。' 
+      ? 'RDI瑞国际照明设计（隶属于上海瑞逸环境设计有限公司）创立于2012年，是一家极具创新力的全球化专业照明顾问品牌。公司现已形成成熟的国际化服务布局，在上海、深圳、香港设立注册直营办公室，于纽约、新加坡设立海外办事处，搭建跨时区、跨地域高效协同网络。十余年来，团队凭借前沿设计理念与扎实落地能力，业务版图覆盖亚洲、欧洲、北美洲、南极洲等全球多地，持续斩获多项国际权威照明设计大奖，是业内兼具综合实力、创新能力与国际口碑的专业照明设计机构。' 
       : 'Founded in 2012, RDESIGN INTERNATIONAL Lighting Design (a subsidiary of Shanghai Ruiyi Environmental Design Co., Ltd.) is a highly innovative global professional lighting consultancy. We have established a mature international service network with direct offices in Shanghai, Shenzhen, and Hong Kong, along with overseas representative offices in New York and Singapore, creating an efficient, cross-time-zone, and cross-regional collaborative system. Over the past decade, leveraging our cutting-edge design philosophy and robust implementation capabilities, RDI has expanded its business footprint across Asia, Europe, North America, and Antarctica. A recipient of numerous prestigious international lighting design awards, RDI is recognized as an industry benchmark, combining comprehensive strength, creative excellence, and global reputation.',
     
     sec1Title: lang === 'cn' ? '一、全域光影设计，重塑空间价值' : 'I. Comprehensive Lighting Solutions: Reshaping Spatial Value',
@@ -192,7 +192,7 @@ export default function AboutPage({ lang }: AboutPageProps) {
     
     sec4Title: lang === 'cn' ? '四、品牌理念愿景，深耕创新未来' : 'IV. Brand Philosophy and Vision: Deepening Innovation for the Future',
     sec4Text: lang === 'cn'
-      ? 'RDI瑞国际照明设计始终秉持“以光为艺、以质为核、创新赋能、赋能城市”的核心理念，深耕光影艺术创新与绿色节能设计，专注平衡光与建筑、自然、城市人文的共生关系。未来，公司将持续深化全球化布局与科技化设计升级，依托跨学科团队与国际合作优势，持续输出高品质、前瞻性的照明设计成果，致力打造世界级照明设计标杆品牌。'
+      ? 'RDI瑞国际照明设计始终秉持“以光为艺、以质为核、创新赋能、赋能城市”的核心理念，深耕光影艺术创新与绿色节能设计，专注平衡光与建筑、自然、城市人文的共生关系。未来，公司将持续深化全球化布局与科技化设计升级，依托跨学科团队与国际合作优势，持续输出高品质、前瞻性的照明设计成果，致力打造世界级照明设计专业品牌。'
       : 'RDI consistently upholds our core philosophy: "Light as Art, Quality as Core, Innovation as Empowerment, and Empowering the City." We are committed to fostering innovations in light art and green energy-efficient design, focusing on the symbiotic relationship between light, architecture, nature, and urban culture. Looking ahead, RDI will continue to deepen our global presence and upgrade our technological design capabilities. By leveraging our multidisciplinary expertise and international collaborative advantages, we aim to consistently deliver high-quality, forward-looking lighting solutions and aspire to become a world-class benchmark in the lighting design industry.',
     
     partnersTitle: lang === 'cn' ? '合作伙伴' : 'PARTNERS',
