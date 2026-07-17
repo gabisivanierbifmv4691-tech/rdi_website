@@ -25,24 +25,24 @@ const STATIC_DESIGNERS: Partner[] = [
 ];
 
 const gridImages = [
-  "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
-  "https://images.unsplash.com/photo-1542744173-8e7e53415bb0",
-  "https://images.unsplash.com/photo-1552664730-d307ca884978",
-  "https://images.unsplash.com/photo-1522071820081-009f0129c71c",
-  "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4",
-  "https://images.unsplash.com/photo-1531482615713-2afd69097998",
-  "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
-  "https://images.unsplash.com/photo-1556761175-b413da4baf72",
-  "https://images.unsplash.com/photo-1556761175-5973dc0f32e7",
-  "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
-  "https://images.unsplash.com/photo-1521737711867-e3b97375f902",
-  "https://images.unsplash.com/photo-1531538606174-0f90ff5dce83",
-  "https://images.unsplash.com/photo-1568992687947-868a62a9f521",
-  "https://images.unsplash.com/photo-1497366754035-f200968a6e72",
-  "https://images.unsplash.com/photo-1497366216548-37526070297c",
-  "https://images.unsplash.com/photo-1497215842964-222b430dc094",
-  "https://images.unsplash.com/photo-1431540015161-0bf868a2d407",
-  "https://images.unsplash.com/photo-1454165833267-2720d2930267"
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/02.webp",
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/03.webp",
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/04.webp",
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/05.webp",
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/06.webp",
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/07.webp",
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/08.webp",
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/09.webp",
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/10.webp",
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/11.webp",
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/12.webp",
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/13.webp",
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/14.webp",
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/15.webp",
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/16.webp",
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/17.webp",
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/18.webp",
+  "https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/19.webp"
 ];
 
 function groupPartners(partners: Partner[], lang: Language): GroupedPartners[] {
@@ -223,7 +223,7 @@ export default function AboutPage({ lang }: AboutPageProps) {
       {/* Hero Image */}
       <section className="w-full h-[70vh] mb-24 overflow-hidden">
         <img 
-          src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=2000"
+          src="https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/01.webp"
           alt="RDI Studio Space"
           className="w-full h-full object-cover"
           referrerPolicy="no-referrer"
@@ -302,7 +302,7 @@ export default function AboutPage({ lang }: AboutPageProps) {
       <section className="max-w-4xl mx-auto px-8 mb-24">
         <div className="w-full h-[45vh] overflow-hidden rounded-sm">
           <img 
-            src="https://images.unsplash.com/photo-1503387762-592dea58ef23?auto=format&fit=crop&q=80&w=1500"
+            src="https://rdilighting.oss-cn-hongkong.aliyuncs.com/aboutus/20.webp"
             alt="Design and Engineering Process"
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
